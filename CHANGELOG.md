@@ -1,6 +1,9 @@
 # MateCat Filters Changelog
 
+## 2.0.0 (2021-09-17)
 
+* Matecat fork > Version bump to 2.0.0
+* Dockerization
 
 ## 1.2.5 (2019-03-04)
 
