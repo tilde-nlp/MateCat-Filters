@@ -6,6 +6,7 @@
 # project; any other module in any other folder should have its own repository.
 /*/
 !/filters
+!/.github
 
 # Exclude local builds files
 target
