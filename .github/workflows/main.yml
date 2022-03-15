@@ -10,7 +10,7 @@ env:
   DOCKER_REGISTRY: europe-west1-docker.pkg.dev
   DOCKER_REPOSITORY: docker
   DOCKER_IMAGE: zombie-cat
-  DOCKER_TAG: ${{ github.sha }}
+  DOCKER_TAG: latest
 
 jobs:
   build_and_push:
