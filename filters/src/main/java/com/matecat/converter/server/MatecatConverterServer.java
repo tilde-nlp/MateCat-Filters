@@ -168,7 +168,17 @@ public class MatecatConverterServer {
         ServletContainer servletContainer = new ServletContainer(resourceConfig);
         ServletHolder sh = new ServletHolder(servletContainer);
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        context.setContextPath("/");
+
+        
+        String contextPath = System.getenv("MATECAT_API_CONTEXT_PATH");
+
+        if (contextPath == null || contextPath == "") {
+            contextPath = "/";
+        }
+
+        LOGGER.info("MateCat starting using contextPath {}", contextPath);
+
+        context.setContextPath(contextPath);
         context.addServlet(sh, "/*");
 
         // Initiate it
