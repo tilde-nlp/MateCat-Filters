@@ -5,8 +5,6 @@ on:
     branches: [master]
 env:
   GCP_PROJECT_ID: nuanxed-platform-lab
-  GKE_CLUSTER: nuanxed-platform-lab-gke
-  GKE_ZONE: europe-west1-b
   DOCKER_REGISTRY: europe-west1-docker.pkg.dev
   DOCKER_REPOSITORY: docker
   DOCKER_IMAGE: zombie-cat
