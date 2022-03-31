@@ -33,5 +33,8 @@ COPY --from=maven /build/target/filters-*.jar app.jar
 # Expose port
 EXPOSE 8732
 
+# Path where the service is hosted
+ENV MATECAT_API_CONTEXT_PATH /zombie-cat/
+
 # set the startup command to run your binary
 CMD ["java", "-cp", ".:app.jar", "com.matecat.converter.Main"]

@@ -5,8 +5,6 @@ on:
     branches: [master]
 env:
   GCP_PROJECT_ID: nuanxed-platform-lab
-  GKE_CLUSTER: nuanxed-platform-lab-gke
-  GKE_ZONE: europe-west1-b
   DOCKER_REGISTRY: europe-west1-docker.pkg.dev
   DOCKER_REPOSITORY: docker
   DOCKER_IMAGE: zombie-cat
@@ -28,10 +26,6 @@ jobs:
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v0
-  
-      - name: Connect to GKE cluster
-        run: |
-          gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
 
       - name: Configure docker
         run: |
