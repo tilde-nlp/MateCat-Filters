@@ -1,6 +1,12 @@
 # MateCat Filters Changelog
 
 
+## 1.2.6 (2022-04-11)
+
+* Upgraded to Okapi M36
+
+
+
 ## 1.2.5.1 (2022-04-11)
 
 * Add support for Java 17.0.X
