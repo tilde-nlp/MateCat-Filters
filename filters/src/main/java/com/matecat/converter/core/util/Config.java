@@ -33,10 +33,9 @@ public class Config {
     public static final String customSegmentationFolder;
 
     public static final List<InetSocketAddress> winConvs = new ArrayList<>();
-
     
     static {
-        try (InputStream inputStream = System.class.getResourceAsStream("/config.properties")) {
+        try (InputStream inputStream = Config.class.getClassLoader().getResourceAsStream("config.properties")) {
             Properties props = new Properties();
             props.load(inputStream);
 

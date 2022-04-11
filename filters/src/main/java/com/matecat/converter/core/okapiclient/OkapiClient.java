@@ -7,6 +7,10 @@ import com.matecat.converter.core.encoding.Encoding;
 import com.matecat.converter.core.util.Config;
 import com.matecat.converter.okapi.steps.segmentation.AddIcuHintsStep;
 import com.matecat.converter.okapi.steps.segmentation.RemoveIcuHintsStep;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import net.sf.okapi.common.LocaleId;
 import net.sf.okapi.common.MimeTypeMapper;
 import net.sf.okapi.common.Util;
@@ -29,13 +33,6 @@ import net.sf.okapi.steps.whitespacecorrection.WhitespaceCorrectionStep;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Locale;
-
-import static com.matecat.converter.core.Format.SDLXLIFF;
 
 
 /**
@@ -61,7 +58,7 @@ public class OkapiClient {
     /**
      * Initialization of the default segmentation rules and its folder
      */
-    public static final String SRX_RESOURCE_PATH = "/okapi/segmentation/default.srx";
+    public static final String SRX_RESOURCE_PATH = "okapi/segmentation/default.srx";
     public static final File SRX_FILE;
     static {
         // The SRX file is a resource of the application. When it is
@@ -75,7 +72,7 @@ public class OkapiClient {
             throw new RuntimeException("Cannot create a temp file for SRX rules.", e);
         }
         try {
-            FileUtils.copyInputStreamToFile(System.class.getResourceAsStream(SRX_RESOURCE_PATH), SRX_FILE);
+            FileUtils.copyInputStreamToFile(OkapiClient.class.getClassLoader().getResourceAsStream(SRX_RESOURCE_PATH), SRX_FILE);
         } catch (IOException e) {
             throw new RuntimeException("Cannot copy SRX rules to temp file.", e);
         }
