@@ -1,5 +1,11 @@
 # MateCat Filters Changelog
 
+## 1.2.8 (2022-04-12)
+
+* Upgraded to Okapi 1.38.0
+
+
+
 ## 1.2.7 (2022-04-12)
 
 * Upgraded to Okapi M37
