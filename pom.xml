@@ -6,20 +6,20 @@
 
   <groupId>com.matecat</groupId>
   <artifactId>filters-parent</artifactId>
-  <version>1.2.9</version>
+  <version>1.2.10</version>
   <packaging>pom</packaging>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <okapi.version>1.40.0</okapi.version>
+    <okapi.version>1.41.0</okapi.version>
     <!--
     The following parameter is not used by Maven or any other part
     of this code, but we keep it updated in order to make it clear
     which Okapi code we are using in our builds.
     -->
-    <okapi.commit>2f0bd0828577d8ccf463ab551ac0dd97f9cde39a</okapi.commit>
+    <okapi.commit>4ea0ff5ca309626fa25e2e5836f7115f85c03ec2</okapi.commit>
   </properties>
 
   <repositories>
