@@ -2,7 +2,6 @@ package com.matecat.converter.core.okapiclient;
 
 import org.junit.Test;
 
-
 public class OkapiFilterFactoryTest {
 
     /**

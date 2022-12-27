@@ -1,13 +1,10 @@
 package com.matecat.converter.core.okapiclient;
 
+import java.io.File;
 import org.apache.commons.io.FileUtils;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.io.File;
-
-import static org.junit.Assert.*;
-
 
 public class OkapiPackTest {
 
@@ -26,7 +23,6 @@ public class OkapiPackTest {
         // Build the pack
         OkapiPack pack = new OkapiPack(incompleteSamplePack);
 
-
         // Test original file
         File originalFile = pack.getOriginalFile();
 
@@ -38,7 +34,6 @@ public class OkapiPackTest {
         // It's filename is 'Oviedo.docx'
         assertEquals("Oviedo.docx", originalFile.getName());
 
-
         // Test the manifest
         File manifest = pack.getManifest();
 
@@ -49,7 +44,6 @@ public class OkapiPackTest {
 
         // It's filename is 'manifest.rkm'
         assertEquals("manifest.rkm", manifest.getName());
-
 
         // Test the xlf
         File xlf = pack.getXlf();
@@ -63,7 +57,6 @@ public class OkapiPackTest {
         assertEquals(originalFile.getName() + ".xlf", xlf.getName());
 
     }
-
 
     @Test(expected = IllegalArgumentException.class)
     public void testOkapiPackNullFolder() throws Exception {
@@ -84,11 +77,9 @@ public class OkapiPackTest {
         try {
             new OkapiPack(emptyFolder);
             assertTrue(false);
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             assertTrue(true);
-        }
-        finally {
+        } finally {
             emptyFolder.delete();
         }
 
@@ -152,6 +143,5 @@ public class OkapiPackTest {
         pack.delete();
         pack.getDerivedFile();
     }
-
 
 }

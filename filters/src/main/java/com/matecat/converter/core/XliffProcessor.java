@@ -4,17 +4,12 @@ import com.matecat.converter.core.okapiclient.OkapiClient;
 import com.matecat.converter.core.okapiclient.OkapiPack;
 import com.matecat.converter.core.util.Config;
 import com.matecat.converter.core.winconverter.WinConverterRouter;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.text.StringEscapeUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -28,203 +23,40 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.text.StringEscapeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  * Xliff Processor
  *
- * Processor of Xliff files, allowing:
- *  1. Extraction of the embedded pack (original file and manifest)
- *  2. Extraction of source and target languages
+ * Processor of Xliff files, allowing: 1. Extraction of the embedded pack
+ * (original file and manifest) 2. Extraction of source and target languages
  */
 public class XliffProcessor {
 
     // Logger
-    private static Logger LOGGER = LoggerFactory.getLogger(XliffProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(XliffProcessor.class);
 
     private static final String CONVERTER_VERSION = XliffBuilder.class.getPackage().getImplementationVersion();
     private static final Pattern PRODUCER_CONVERTER_VERSION_PATTERN = Pattern.compile("matecat-converter(\\s+([^\"]+))?");
-
-    // File we are processing
-    private File xlf;
-
-    // Embedded pack
-    private OkapiPack pack;
-
-    // Inner properties
-    private String originalFilename = null;
-    private Format originalFormat;
-    private Locale sourceLanguage, targetLanguage;
-
-    private boolean filterExtracted = false;
-    private String filter;
-
-
-    /**
-     * Construct the processor given the XLF
-     * @param xlf Xliff file we are going to process
-     */
-    public XliffProcessor(final File xlf) {
-
-        // Check that the input file is not null
-        if (xlf == null  ||  !xlf.exists()  ||  xlf.isDirectory())
-            throw new IllegalArgumentException("The input file does not exist");
-
-        // Check that the file is an .xlf
-        if (!FilenameUtils.getExtension(xlf.getName()).equals("xlf"))
-            throw new IllegalArgumentException("The input file is not a .xlf file");
-
-        // Save the xlf
-        this.xlf = xlf;
-
-    }
-
-
-    /**
-     * Get source language
-     * @return Source language
-     */
-    public Locale getSourceLanguage() {
-        if (sourceLanguage == null)
-            extractLanguages();
-        return sourceLanguage;
-    }
-
-
-    /**
-     * Get target language
-     * @return Target language
-     */
-    public Locale getTargetLanguage() {
-        if (targetLanguage == null)
-            extractLanguages();
-        return targetLanguage;
-    }
-
-
-    public String getFilter() {
-        if (filterExtracted) return filter;
-
-        filter = extractFilter();
-        filterExtracted = true;
-        return filter;
-    }
-
-    private String extractFilter() {
-        InputStream inputStream = null;
-        XMLStreamReader sax = null;
-        try {
-            inputStream = new FileInputStream(xlf);
-            sax = XMLInputFactory.newInstance().createXMLStreamReader(inputStream);
-
-            // Default value is null
-            String filter = null;
-
-            // Look for a <file> tag in the first 1000 chars
-            while (sax.hasNext() && sax.getLocation().getCharacterOffset() < 1000) {
-                int event = sax.next();
-
-                if (event == XMLStreamConstants.START_ELEMENT && sax.getLocalName().equals("file")) {
-                    filter = sax.getAttributeValue(null, "filter");
-                    break;
-                }
-            }
-
-            return filter;
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        finally {
-            try {
-                if (sax != null) sax.close();
-            } catch (XMLStreamException ignored) {}
-            IOUtils.closeQuietly(inputStream);
-        }
-    }
-
-
-    /**
-     * Extract language from the XLF
-     */
-    private void extractLanguages() {
-        try (InputStream inputStream = new FileInputStream(xlf)) {
-            // Parse the XML document
-            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-            Document document = documentBuilder.parse(inputStream);
-            Element firstFile = (Element) document.getElementsByTagName("file").item(0);
-
-            // Extract the languages
-            this.sourceLanguage = new Locale(firstFile.getAttribute("source-language"));
-            this.targetLanguage = new Locale(firstFile.getAttribute("target-language"));
-        }
-        catch (ParserConfigurationException | SAXException | IOException e) {
-            throw new RuntimeException("Exception extracting source/target languages from MateCat xliff", e);
-        }
-    }
-
-
-    /**
-     * Get the original file embedded into the XLF
-     * @return Original file
-     */
-    public File getOriginalFile() throws Exception {
-
-        // Reconstruct the pack
-        if (pack == null)
-            reconstructPack();
-
-        // Get the original file
-        File originalFile = pack.getOriginalFile();
-
-        // If it does not have its original format, try to convert it
-        originalFile = convertToOriginalFormat(originalFile, originalFormat);
-
-        // Return it
-        return originalFile;
-
-    }
-
-
-    /**
-     * Get the derived file
-     * This is produced using the original file, the manifest and the XLF
-     * @return Derived file
-     */
-    public File getDerivedFile() {
-
-        // Reconstruct the pack
-        if (pack == null)
-            reconstructPack();
-
-        // Generate the derived file
-        File derivedFile = OkapiClient.generateDerivedFile(pack);
-
-        // If it does not have its original format, try to convert it
-        derivedFile = convertToOriginalFormat(derivedFile, originalFormat);
-
-        // Return it
-        return derivedFile;
-
-    }
-
-
     /**
      * Try to convert a file to its original format
+     *
      * @param file File
      * @param originalFormat Original format
      * @return Converted file if possible, input file otherwise
      */
     private static File convertToOriginalFormat(File file, Format originalFormat) {
         Format currentFormat = Format.getFormat(file);
-        if (Config.winConvEnabled && currentFormat != originalFormat && !Format.isOCRFormat(originalFormat)) {
+        if (Config.WIN_CONV_ENABLED && currentFormat != originalFormat && !Format.isOCRFormat(originalFormat)) {
             try {
                 file = WinConverterRouter.convert(file, originalFormat);
             } catch (Exception e) {
@@ -233,60 +65,10 @@ public class XliffProcessor {
         }
         return file;
     }
-
-
     /**
-     * Reconstruct the original Okapi result pack from the embedded files
-     */
-    private void reconstructPack() {
-
-        try (InputStream inputStream = new FileInputStream(xlf)) {
-
-            // Output folder
-            File packFolder = new File(xlf.getParentFile().getPath() + File.separator + "pack");
-            if (packFolder.exists())
-                FileUtils.cleanDirectory(packFolder);
-            else
-                packFolder.mkdir();
-
-            // Parse the XML document
-            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-            Document document = documentBuilder.parse(inputStream);
-
-            NodeList fileElements = document.getElementsByTagName("file");
-            Element originalFileElement = (Element) fileElements.item(0);
-            Element manifestElement = (Element) fileElements.item(1);
-
-            // Reconstruct the manifest
-            String originalFilename = reconstructManifest(packFolder, manifestElement);
-
-            checkProducerVersion(originalFileElement);
-
-            reconstructOriginalFile(packFolder, originalFileElement, originalFilename);
-
-            extractOriginalFormat(originalFileElement);
-
-            // Extract the languages
-            this.sourceLanguage = new Locale(originalFileElement.getAttribute("source-language"));
-            this.targetLanguage = new Locale(originalFileElement.getAttribute("target-language"));
-
-            // Reconstruct the original xlf
-            reconstructOriginalXlf(packFolder, document, originalFileElement, manifestElement, originalFilename);
-
-            // Generate the pack (which will check the extracted files)
-            this.pack = new OkapiPack(packFolder);
-
-        } catch (ParserConfigurationException | SAXException | IOException e) {
-            throw new RuntimeException("Exception extracting Okapi pack from MateCat xliff", e);
-        }
-
-    }
-
-    /**
-     * Checks the tool-id attribute of the provided <file> element, extracts
-     * the XLIFF producer converter version and logs some warnings if the
-     * producer version does not match the version of this server.
+     * Checks the tool-id attribute of the provided <file> element, extracts the
+     * XLIFF producer converter version and logs some warnings if the producer
+     * version does not match the version of this server.
      */
     private static void checkProducerVersion(Element file) {
         final String toolId = file.getAttribute("tool-id");
@@ -312,24 +94,245 @@ public class XliffProcessor {
         }
     }
 
+    // File we are processing
+    private File xlf;
+
+    // Embedded pack
+    private OkapiPack pack;
+
+    // Inner properties
+    // private String originalFilename = null;
+    private Format originalFormat;
+    private Locale sourceLanguage, targetLanguage;
+
+    private boolean filterExtracted = false;
+    private String filter;
+
+    /**
+     * Construct the processor given the XLF
+     *
+     * @param xlf Xliff file we are going to process
+     */
+    public XliffProcessor(final File xlf) {
+
+        // Check that the input file is not null
+        if (xlf == null || !xlf.exists() || xlf.isDirectory()) {
+            throw new IllegalArgumentException("The input file does not exist");
+        }
+
+        // Check that the file is an .xlf
+        if (!FilenameUtils.getExtension(xlf.getName()).equals("xlf")) {
+            throw new IllegalArgumentException("The input file is not a .xlf file");
+        }
+
+        // Save the xlf
+        this.xlf = xlf;
+
+    }
+
+    /**
+     * Get source language
+     *
+     * @return Source language
+     */
+    public Locale getSourceLanguage() {
+        if (sourceLanguage == null) {
+            extractLanguages();
+        }
+        return sourceLanguage;
+    }
+
+    /**
+     * Get target language
+     *
+     * @return Target language
+     */
+    public Locale getTargetLanguage() {
+        if (targetLanguage == null) {
+            extractLanguages();
+        }
+        return targetLanguage;
+    }
+
+    public String getFilter() {
+        if (filterExtracted) {
+            return filter;
+        }
+
+        filter = extractFilter();
+        filterExtracted = true;
+        return filter;
+    }
+
+    private String extractFilter() {
+        InputStream inputStream = null;
+        XMLStreamReader sax = null;
+        try {
+            inputStream = new FileInputStream(xlf);
+            sax = XMLInputFactory.newInstance().createXMLStreamReader(inputStream);
+
+            // Default value is null
+            String _filter = null;
+
+            // Look for a <file> tag in the first 1000 chars
+            while (sax.hasNext() && sax.getLocation().getCharacterOffset() < 1000) {
+                int event = sax.next();
+
+                if (event == XMLStreamConstants.START_ELEMENT && sax.getLocalName().equals("file")) {
+                    _filter = sax.getAttributeValue(null, "filter");
+                    break;
+                }
+            }
+
+            return _filter;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (sax != null) {
+                    sax.close();
+                }
+            } catch (XMLStreamException ignored) {
+            }
+            IOUtils.closeQuietly(inputStream);
+        }
+    }
+
+    /**
+     * Extract language from the XLF
+     */
+    private void extractLanguages() {
+        try ( InputStream inputStream = new FileInputStream(xlf)) {
+            // Parse the XML document
+            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+            Document document = documentBuilder.parse(inputStream);
+            Element firstFile = (Element) document.getElementsByTagName("file").item(0);
+
+            // Extract the languages
+            this.sourceLanguage = Locale.forLanguageTag(firstFile.getAttribute("source-language"));
+            this.targetLanguage = Locale.forLanguageTag(firstFile.getAttribute("target-language"));
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            throw new RuntimeException("Exception extracting source/target languages from MateCat xliff", e);
+        }
+    }
+
+    /**
+     * Get the original file embedded into the XLF
+     *
+     * @return Original file
+     * @throws java.lang.Exception
+     */
+    public File getOriginalFile() throws Exception {
+
+        // Reconstruct the pack
+        if (pack == null) {
+            reconstructPack();
+        }
+
+        // Get the original file
+        File originalFile = pack.getOriginalFile();
+
+        // If it does not have its original format, try to convert it
+        originalFile = convertToOriginalFormat(originalFile, originalFormat);
+
+        // Return it
+        return originalFile;
+
+    }
+
+    /**
+     * Get the derived file This is produced using the original file, the
+     * manifest and the XLF
+     *
+     * @return Derived file
+     */
+    public File getDerivedFile() {
+
+        // Reconstruct the pack
+        if (pack == null) {
+            reconstructPack();
+        }
+
+        // Generate the derived file
+        File derivedFile = OkapiClient.generateDerivedFile(pack);
+
+        // If it does not have its original format, try to convert it
+        derivedFile = convertToOriginalFormat(derivedFile, originalFormat);
+
+        // Return it
+        return derivedFile;
+
+    }
+
+
+    /**
+     * Reconstruct the original Okapi result pack from the embedded files
+     */
+    private void reconstructPack() {
+
+        try ( InputStream inputStream = new FileInputStream(xlf)) {
+
+            // Output folder
+            File packFolder = new File(xlf.getParentFile().getPath() + File.separator + "pack");
+            if (packFolder.exists()) {
+                FileUtils.cleanDirectory(packFolder);
+            } else {
+                packFolder.mkdir();
+            }
+
+            // Parse the XML document
+            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+            Document document = documentBuilder.parse(inputStream);
+
+            NodeList fileElements = document.getElementsByTagName("file");
+            Element originalFileElement = (Element) fileElements.item(0);
+            Element manifestElement = (Element) fileElements.item(1);
+
+            // Reconstruct the manifest
+            String originalFilename = reconstructManifest(packFolder, manifestElement);
+
+            checkProducerVersion(originalFileElement);
+
+            reconstructOriginalFile(packFolder, originalFileElement, originalFilename);
+
+            extractOriginalFormat(originalFileElement);
+
+            // Extract the languages
+            this.sourceLanguage = Locale.forLanguageTag(originalFileElement.getAttribute("source-language"));
+            this.targetLanguage = Locale.forLanguageTag(originalFileElement.getAttribute("target-language"));
+
+            // Reconstruct the original xlf
+            reconstructOriginalXlf(packFolder, document, originalFileElement, manifestElement, originalFilename);
+
+            // Generate the pack (which will check the extracted files)
+            this.pack = new OkapiPack(packFolder);
+
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            throw new RuntimeException("Exception extracting Okapi pack from MateCat xliff", e);
+        }
+
+    }
+
 
     /**
      * Extract the original format from the embedded information
+     *
      * @param fileElement XML element from the file
      */
     private void extractOriginalFormat(Element fileElement) {
         try {
             String filename = fileElement.getAttribute("original");
             this.originalFormat = Format.getFormat(filename);
-        }
-        catch (Exception e1) {
+        } catch (Exception e1) {
             throw new RuntimeException("The encoded file has no extension");
         }
     }
 
-
     /**
      * Get the original filename from the embedded information
+     *
      * @param fileElement XML element from the file
      * @return Filename
      */
@@ -344,17 +347,17 @@ public class XliffProcessor {
             String datatype = fileElement.getAttribute("datatype");
             String convertedExtension = datatype.substring(2);
             filename = FilenameUtils.getBaseName(filename) + "." + convertedExtension;
+        } catch (Exception ignore) {
         }
-        catch (Exception ignore) {}
 
         // Return it
         return filename;
 
     }
 
-
     /**
      * Extract the original file and save it in the pack
+     *
      * @param packFolder Pack's folder
      * @param fileElement XML element containing the file
      */
@@ -374,25 +377,25 @@ public class XliffProcessor {
 
             // Create original folder
             File originalFolder = new File(packFolder.getPath() + File.separator + OkapiPack.ORIGINAL_DIRECTORY_NAME);
-            if (originalFolder.exists())
+            if (originalFolder.exists()) {
                 FileUtils.cleanDirectory(originalFolder);
-            else
+            } else {
                 originalFolder.mkdir();
+            }
 
             // Reconstruct the original file
             File originalFile = new File(originalFolder.getPath() + File.separator + originalFilename);
             originalFile.createNewFile();
             FileUtils.writeByteArrayToFile(originalFile, originalFileBytes);
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("Exception extracting original file from MateCat xliff", e);
         }
     }
 
-
     /**
      * Reconstruct the manifest and save it in the pack
+     *
      * @param packFolder Pack's folder
      * @param manifestElement XML element containing the manifest
      */
@@ -401,11 +404,12 @@ public class XliffProcessor {
         try {
 
             // Check that it's the manifest
-            if (!manifestElement.getAttribute("original").equals(OkapiPack.MANIFEST_FILENAME))
+            if (!manifestElement.getAttribute("original").equals(OkapiPack.MANIFEST_FILENAME)) {
                 throw new RuntimeException("The xlf is corrupted: it does not contain a manifest");
+            }
 
             // Extract language
-            String targetLanguage = manifestElement.getAttribute("target-language");
+            String _targetLanguage = manifestElement.getAttribute("target-language");
 
             // Manifest contents
             Element internalFileElement = (Element) manifestElement.getElementsByTagName("internal-file").item(0);
@@ -425,7 +429,7 @@ public class XliffProcessor {
             // identical to the original, without translations.
             // To fix this I replace the target in the manifest with
             // the one defined in the XLIFF.
-            manifest = manifest.replaceFirst("(<manifest [^>]* ?target=\")[^\"]+\"", "$1" + targetLanguage + "\"");
+            manifest = manifest.replaceFirst("(<manifest [^>]* ?target=\")[^\"]+\"", "$1" + _targetLanguage + "\"");
 
             // Extract source filename from manifest
             // Originally this class used to extract the original filename
@@ -447,18 +451,17 @@ public class XliffProcessor {
             FileUtils.writeStringToFile(manifestFile, manifest, StandardCharsets.UTF_8);
 
             return originalFilename;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("Exception extracting Okapi manifest from MateCat xliff", e);
         }
     }
 
-
     /**
-     * Reconstruct the original XLF used to derive this XLF; and save it into the work folder
-     * inside the pack
+     * Reconstruct the original XLF used to derive this XLF; and save it into
+     * the work folder inside the pack
      *
      * This is done by simply removing the file and manifest XML elements.
+     *
      * @param packFolder Pack's folder
      * @param document XML document
      * @param fileElement XML element containing the file
@@ -492,13 +495,13 @@ public class XliffProcessor {
 
             // Create work folder
             File workFolder = new File(packFolder.getPath() + File.separator + OkapiPack.WORK_DIRECTORY_NAME);
-            if (workFolder.exists())
+            if (workFolder.exists()) {
                 FileUtils.cleanDirectory(workFolder);
-            else
+            } else {
                 workFolder.mkdir();
+            }
 
             // Save the file
-
             String xlfOutputPath = workFolder.getPath() + File.separator + originalFilename + ".xlf";
 
             // The Java Transformer doesn't update the XML prolog with the
@@ -510,7 +513,7 @@ public class XliffProcessor {
             // FileOutputStream, that uses the default Java charset, that we
             // ensured is UTF-8 in the Main class) I tell Transformer to not
             // write the prolog and I write it myself in the correct way.
-            try (OutputStream outputStream = new FileOutputStream(xlfOutputPath)) {
+            try ( OutputStream outputStream = new FileOutputStream(xlfOutputPath)) {
                 outputStream.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>".getBytes());
                 StreamResult streamResult = new StreamResult(outputStream);
 

@@ -1,14 +1,12 @@
 package com.matecat.converter.server.resources;
 
-import org.apache.commons.io.IOUtils;
-
+import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
-
+import org.apache.commons.io.IOUtils;
 
 /**
  * Client resource
@@ -35,7 +33,10 @@ public class ClientResource {
 
     /**
      * Output the client
+     *
+     * @param request
      * @return Client
+     * @throws java.io.IOException
      */
     @GET
     public Response client(@Context HttpServletRequest request) throws IOException {

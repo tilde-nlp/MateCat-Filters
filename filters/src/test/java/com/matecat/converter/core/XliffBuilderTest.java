@@ -2,20 +2,17 @@ package com.matecat.converter.core;
 
 import com.matecat.converter.core.okapiclient.OkapiPack;
 import com.matecat.filters.basefilters.DefaultFilter;
+import java.io.File;
+import java.nio.file.Files;
+import java.util.Base64;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
-import java.net.URL;
-import java.nio.file.Files;
-import java.util.Base64;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Xliff Builder Test

@@ -1,12 +1,10 @@
 package com.matecat.converter.core.encoding;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import java.io.File;
 import java.net.URISyntaxException;
-
 import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
 
 public class EncodingDetectorRouterTest {
 
@@ -76,5 +74,5 @@ public class EncodingDetectorRouterTest {
         Encoding match = detector.detect(testFile);
         assertEquals(Encoding.DEFAULT, match.getCode());
     }
-    
+
 }

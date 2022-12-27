@@ -2,13 +2,13 @@ package com.matecat.converter.okapi.steps.segmentation;
 
 import com.ibm.icu.text.BreakIterator;
 import com.ibm.icu.util.ULocale;
+import java.util.Locale;
 import net.sf.okapi.common.Event;
 import net.sf.okapi.common.pipeline.BasePipelineStep;
 import net.sf.okapi.common.resource.ITextUnit;
 import net.sf.okapi.common.resource.Segment;
 import net.sf.okapi.common.resource.TextContainer;
 import net.sf.okapi.common.resource.TextFragment;
-import java.util.Locale;
 
 public class AddIcuHintsStep extends BasePipelineStep {
 
@@ -22,7 +22,7 @@ public class AddIcuHintsStep extends BasePipelineStep {
     }
 
     @Override
-    protected Event handleTextUnit (Event event) {
+    protected Event handleTextUnit(Event event) {
         final ITextUnit tu = event.getTextUnit();
         if (tu.isTranslatable()) {
             final TextContainer tc = tu.getSource();
@@ -51,7 +51,9 @@ public class AddIcuHintsStep extends BasePipelineStep {
 
                 for (int boundary = sentenceIterator.next(); boundary != BreakIterator.DONE; boundary = sentenceIterator.next()) {
                     // ICU puts always a boundary at the end of the string: skip it
-                    if (boundary == cleanText.length()) continue;
+                    if (boundary == cleanText.length()) {
+                        continue;
+                    }
                     // Boundary is "the zero-based index of the character following the boundary"
                     // (see http://userguide.icu-project.org/boundaryanalysis)
                     // Moreover, if there are lots of spaces between a sentence and the following,

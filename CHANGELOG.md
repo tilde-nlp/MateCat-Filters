@@ -1,5 +1,12 @@
 # MateCat Filters Changelog
 
+## 1.2.13 (2022-12-27)
+
+* Fix deprecated Java functions
+* Updated dependencies
+
+
+
 ## 1.2.12 (2022-08-29)
 
 * Upgraded to Okapi 1.44.0
@@ -83,7 +90,7 @@
 * XLIFF filter now preserves CDATA areas in output files
 * Better whitespace correction for conversion from/to oriental languages
 * Graceful failures on password protected MS Office files
-* Fixed: ">" char was not escaped in XLIFF filter output 
+* Fixed: ">" char was not escaped in XLIFF filter output
 * Proper handling of the SIGTERM, now you can quit the app with CTRL+C
 
 Changes we developed in Okapi and approved in this MateCat Filters release:

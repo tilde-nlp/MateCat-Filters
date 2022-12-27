@@ -1,32 +1,28 @@
 package com.matecat.converter.server.resources;
 
+import com.matecat.converter.core.project.Project;
+import com.matecat.converter.core.project.ProjectFactory;
+import com.matecat.converter.server.JSONResponseFactory;
+import com.matecat.converter.server.exceptions.ServerException;
+import com.matecat.filters.basefilters.FiltersRouter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
 import java.util.MissingResourceException;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import net.sf.okapi.common.exceptions.OkapiEncryptedDataException;
 import net.sf.okapi.common.exceptions.OkapiUnexpectedRevisionException;
-import com.matecat.filters.basefilters.FiltersRouter;
 import org.apache.commons.io.FilenameUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.matecat.converter.core.project.Project;
-import com.matecat.converter.core.project.ProjectFactory;
-import com.matecat.converter.server.JSONResponseFactory;
-import com.matecat.converter.server.exceptions.ServerException;
-
 
 /**
  * Resource taking care of the conversion task into .XLF
@@ -35,10 +31,18 @@ import com.matecat.converter.server.exceptions.ServerException;
 public class ConvertToXliffResource {
 
     // Logger
-    private static Logger LOGGER = LoggerFactory.getLogger(ConvertToXliffResource.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConvertToXliffResource.class);
 
     /**
      * Convert a file into XLF
+     *
+     * @param fileInputStream
+     * @param contentDispositionHeader
+     * @param filename
+     * @param sourceLanguageCode
+     * @param targetLanguageCode
+     * @param segmentation
+     * @return
      */
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -57,8 +61,9 @@ public class ConvertToXliffResource {
         // workaround: you can send the filename in UTF-8 in the 'fileName' POST
         // param. If the 'fileName' parameter is present, it overrides the name of
         // the file in 'documentContent'
-        if (filename == null || filename.isEmpty())
+        if (filename == null || filename.isEmpty()) {
             filename = FilenameUtils.getName(contentDispositionHeader.getFileName());
+        }
 
         // Make extension ALWAYS lower case.
         // The original extension of the file is written in the output XLIFF
@@ -77,8 +82,9 @@ public class ConvertToXliffResource {
         try {
 
             // Check that the input file is not null
-            if (fileInputStream == null)
+            if (fileInputStream == null) {
                 throw new IllegalArgumentException("The input file has not been sent");
+            }
 
             // Parse the codes
             Locale sourceLanguage = parseLanguage(sourceLanguageCode);
@@ -98,9 +104,7 @@ public class ConvertToXliffResource {
 
             everythingOk = true;
             LOGGER.info("Successfully returned XLIFF file");
-        }
-
-        // If there is any error, return it
+        } // If there is any error, return it
         catch (Exception e) {
             String errorMessage;
             if (e instanceof OkapiUnexpectedRevisionException) {
@@ -110,27 +114,26 @@ public class ConvertToXliffResource {
             } else {
                 errorMessage = e.getMessage();
             }
-            response =  Response
+            response = Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(JSONResponseFactory.getError(errorMessage))
                     .build();
             LOGGER.error("Exception converting source to XLIFF: {}", errorMessage, e);
-        }
-
-        // Close the project and streams
+        } // Close the project and streams
         finally {
             if (fileInputStream != null)
                 try {
-                    fileInputStream.close();
-                } catch (IOException ignored) {}
-            if (project != null)
-                // Delete folder only if everything went well
+                fileInputStream.close();
+            } catch (IOException ignored) {
+            }
+            if (project != null) // Delete folder only if everything went well
+            {
                 project.close(everythingOk);
+            }
         }
 
         return response;
     }
-
 
     /**
      * Parse the language code into Locales
@@ -145,9 +148,7 @@ public class ConvertToXliffResource {
         try {
             language.getISO3Language();
             return language;
-        }
-
-        // If there is any error, throw a ServerException
+        } // If there is any error, throw a ServerException
         catch (MissingResourceException e) {
             throw new ServerException("Invalid language: " + languageCode);
         }

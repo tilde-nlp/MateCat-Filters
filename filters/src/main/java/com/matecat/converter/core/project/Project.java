@@ -1,30 +1,29 @@
 package com.matecat.converter.core.project;
 
 import com.matecat.converter.core.util.Config;
-import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Project class
  *
- * It represents a project created from one file. A project has it's own folder, and is guaranteed to not have
- * name collisions with other projects.
+ * It represents a project created from one file. A project has it's own folder,
+ * and is guaranteed to not have name collisions with other projects.
  *
  * Projects can be created by means of the ProjectFactory class.
+ *
  * @see ProjectFactory
  */
 public class Project {
 
     // Logger
-    private static Logger LOGGER = LoggerFactory.getLogger(Project.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Project.class);
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH-mm");
@@ -35,6 +34,7 @@ public class Project {
 
     /**
      * Contructor invoked by the factory, receiving a file
+     *
      * @param file Project's file
      */
     protected Project(File file) {
@@ -44,34 +44,41 @@ public class Project {
 
     /**
      * Get folder
+     *
      * @return Project's folder
      */
     public File getFolder() {
-        if (folder == null)
+        if (folder == null) {
             throw new RuntimeException("The project has already been deleted");
+        }
         return folder;
     }
 
     /**
      * Get file
+     *
      * @return Project's file
      */
     public File getFile() {
-        if (file == null)
+        if (file == null) {
             throw new RuntimeException("The project has already been deleted");
+        }
         return file;
     }
 
     /**
      * Close the project
      *
-     * This will remove all the inner references to the file, and remove the folder depending on the configuration
-     * One this method is executed, it's not possible to use the project again.
+     * This will remove all the inner references to the file, and remove the
+     * folder depending on the configuration One this method is executed, it's
+     * not possible to use the project again.
+     *
+     * @param success
      */
     public void close(boolean success) {
-        if (!success && !Config.errorsFolder.isEmpty()) {
+        if (!success && !Config.ERRORS_FOLTER.isEmpty()) {
             final Date now = Calendar.getInstance().getTime();
-            final String errorFolderPath = Config.errorsFolder
+            final String errorFolderPath = Config.ERRORS_FOLTER
                     + File.separator + DATE_FORMAT.format(now)
                     + File.separator + TIME_FORMAT.format(now)
                     + "-" + folder.getName();
@@ -80,7 +87,7 @@ public class Project {
             errorFolder.getParentFile().mkdirs();
 
             boolean moveError = false;
-            if (Config.deleteOnClose) {
+            if (Config.DELETE_ON_CLOSE) {
                 try {
                     FileUtils.moveDirectory(folder, errorFolder);
                     LOGGER.info("Folder with temp files moved to " + errorFolderPath);
@@ -90,7 +97,7 @@ public class Project {
                 }
             }
 
-            if (!Config.deleteOnClose || moveError) {
+            if (!Config.DELETE_ON_CLOSE || moveError) {
                 try {
                     FileUtils.copyDirectory(folder, errorFolder);
                 } catch (Exception e) {
@@ -98,7 +105,7 @@ public class Project {
                 }
             }
         }
-        if (Config.deleteOnClose && folder.exists()) {
+        if (Config.DELETE_ON_CLOSE && folder.exists()) {
             try {
                 FileUtils.deleteDirectory(folder);
             } catch (IOException e) {

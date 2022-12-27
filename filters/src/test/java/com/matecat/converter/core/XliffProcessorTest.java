@@ -2,24 +2,21 @@ package com.matecat.converter.core;
 
 import com.matecat.converter.core.okapiclient.OkapiPack;
 import com.matecat.filters.basefilters.DefaultFilter;
-import org.apache.commons.io.FileUtils;
-import org.junit.Test;
-
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Locale;
-
+import org.apache.commons.io.FileUtils;
 import static org.junit.Assert.assertEquals;
-
+import org.junit.Test;
 
 /**
  * Xliff processor Test
  */
 public class XliffProcessorTest {
 
-
     /**
      * Test the extraction of the original file without problems
+     *
      * @throws Exception
      */
     @Test
@@ -28,9 +25,9 @@ public class XliffProcessorTest {
         new XliffProcessor(xlf).getOriginalFile();
     }
 
-
     /**
      * Test that the file is derived and, in special, that it is translated
+     *
      * @throws Exception
      */
     @Test

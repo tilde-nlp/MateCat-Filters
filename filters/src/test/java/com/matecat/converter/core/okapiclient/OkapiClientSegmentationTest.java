@@ -1,13 +1,11 @@
 package com.matecat.converter.core.okapiclient;
 
 import com.matecat.converter.core.encoding.Encoding;
-import org.apache.commons.io.FileUtils;
-import org.junit.Assert;
-import org.junit.Test;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
+import java.io.File;
+import java.io.IOException;
+import static java.nio.charset.Charset.forName;
+import java.util.ArrayList;
+import java.util.Locale;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -15,12 +13,12 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Locale;
-
-import static java.nio.charset.Charset.forName;
+import org.apache.commons.io.FileUtils;
+import org.junit.Assert;
+import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class OkapiClientSegmentationTest {
 
@@ -41,7 +39,6 @@ public class OkapiClientSegmentationTest {
         } catch (XPathExpressionException e) {
             throw new RuntimeException(e);
         }
-
 
         ArrayList<String> strings = new ArrayList<>();
         for (int i = 0; i < elements.getLength(); i++) {

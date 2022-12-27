@@ -34,32 +34,28 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * Okapi Client
  *
- * This class interacts with the Okapi framework in order to generate its result pack, or to merge it into
- * the derived (translated) file.
+ * This class interacts with the Okapi framework in order to generate its result
+ * pack, or to merge it into the derived (translated) file.
  *
- * TODO: this class should be simplified, split in smaller methods and merged in DefaultFilter, to provide a strong base class for future specialization
+ * TODO: this class should be simplified, split in smaller methods and merged in
+ * DefaultFilter, to provide a strong base class for future specialization
  */
 public class OkapiClient {
 
     // Logger
     private static Logger LOGGER = LoggerFactory.getLogger(OkapiClient.class);
 
-    /**
-     * Private constructor (static class)
-     */
-    private OkapiClient() {}
 
     /* SEGMENTATION RULES */
-
     /**
      * Initialization of the default segmentation rules and its folder
      */
     public static final String SRX_RESOURCE_PATH = "okapi/segmentation/default.srx";
     public static final File SRX_FILE;
+
     static {
         // The SRX file is a resource of the application. When it is
         // packed inside a jar Okapi fails reading its content.
@@ -80,9 +76,9 @@ public class OkapiClient {
 
 
     /* IS SUPPORTED */
-
     /**
      * Check if a format is supported
+     *
      * @param format Format
      * @return True if the format is supported, false otherwise
      */
@@ -92,9 +88,9 @@ public class OkapiClient {
 
 
     /* OKAPI PIPELINE / STEPS CREATION */
-
     /**
      * Create pipeline driver
+     *
      * @param root File's root
      * @return Pipeline driver
      */
@@ -113,16 +109,19 @@ public class OkapiClient {
 
     /**
      * Create the segmentation step
+     *
      * @param sourceLanguage Source language
-     * @param segmentation the name of the custom segmentation file to use (if any), or <code>null</code> to fallback on default
-     * @param driver a reference to the current driver to be populated with the segmentation step
-     * 
+     * @param segmentation the name of the custom segmentation file to use (if
+     * any), or <code>null</code> to fallback on default
+     * @param driver a reference to the current driver to be populated with the
+     * segmentation step
+     *
      * @see Config.customSegmentationFolder
      */
     private static void createSegmentationStep(Locale sourceLanguage, String segmentation, IPipelineDriver driver) {
         SegmentationStep segmentationStep = new SegmentationStep();
         net.sf.okapi.steps.segmentation.Parameters params = (net.sf.okapi.steps.segmentation.Parameters) segmentationStep.getParameters();
-        
+
         String customSegmentationFilePath = getCustomSegmentationFilePath(segmentation);
 
         if (customSegmentationFilePath != null) {
@@ -135,13 +134,16 @@ public class OkapiClient {
             driver.addStep(new RemoveIcuHintsStep());
         }
     }
-    
-    
+
     /**
-     * given a segmentation name, check if exists a corresponding file with custom segmentation rules and return its path 
+     * given a segmentation name, check if exists a corresponding file with
+     * custom segmentation rules and return its path
+     *
      * @param segmentation
-     * @return the full path of the file containing the specified segmentation rules, or null if no custom segmentation has been defined
-     * @throws RuntimeException if the file does not exist or there are no read permissions on it 
+     * @return the full path of the file containing the specified segmentation
+     * rules, or null if no custom segmentation has been defined
+     * @throws RuntimeException if the file does not exist or there are no read
+     * permissions on it
      */
     private static String getCustomSegmentationFilePath(String segmentation) {
         // no custom segmentation required
@@ -150,8 +152,8 @@ public class OkapiClient {
         }
 
         // the custom segmentation folder is empty, skip all checks and use default rules
-        if (Config.customSegmentationFolder.isEmpty()) {
-            throw new IllegalStateException("Custom segmentation file requested, but no segmentation folder configured. File: " + Config.customSegmentationFolder + segmentation + ".srx");
+        if (Config.CUSTOM_SEGMENTATION_FOLDER.isEmpty()) {
+            throw new IllegalStateException("Custom segmentation file requested, but no segmentation folder configured. File: " + Config.CUSTOM_SEGMENTATION_FOLDER + segmentation + ".srx");
         }
 
 
@@ -159,9 +161,8 @@ public class OkapiClient {
          * Try to get the proper file, if it is not found or not accessible, raise an exception for the client.
          * That is why no exception handling has been defined here
          */
-
         // instantiate a file wrapper to make all the necessary checks
-        File segmentationFile = new File(Config.customSegmentationFolder + segmentation + ".srx");
+        File segmentationFile = new File(Config.CUSTOM_SEGMENTATION_FOLDER + segmentation + ".srx");
 
         /* Check if the corresponding file exists
          *
@@ -180,22 +181,22 @@ public class OkapiClient {
          * Even though the behavior is correct (and this case should not happen), the error message might be trivial
          */
         if (!segmentationFile.isFile()) {
-            throw new IllegalArgumentException("Custom segmentation file not found. File: " + Config.customSegmentationFolder + segmentation + ".srx");
+            throw new IllegalArgumentException("Custom segmentation file not found. File: " + Config.CUSTOM_SEGMENTATION_FOLDER + segmentation + ".srx");
         }
 
         // Check if the corresponding file can be read
         if (!segmentationFile.canRead()) {
-            throw new IllegalArgumentException("Custom segmentation file cannot be read. File: " + Config.customSegmentationFolder + segmentation + ".srx");
+            throw new IllegalArgumentException("Custom segmentation file cannot be read. File: " + Config.CUSTOM_SEGMENTATION_FOLDER + segmentation + ".srx");
         }
 
         // the file exists and can be read, return its path
         LOGGER.info("Using custom segmentation in file: " + segmentationFile.getPath());
         return segmentationFile.getPath();
     }
-    
 
     /**
      * Create the extraction step
+     *
      * @return Extraction step
      */
     private static ExtractionStep createExtractionStep() {
@@ -207,6 +208,7 @@ public class OkapiClient {
 
     /**
      * Create the merging steps
+     *
      * @return Merging step
      */
     private static MergingStep createMergingStep() {
@@ -224,17 +226,17 @@ public class OkapiClient {
         // "en-US" and "en-GB".
         // So I implemented a more radical workaround, in
         // XLliffProcessor::reconstructManifest.
-
         // net.sf.okapi.steps.rainbowkit.postprocess.Parameters params = (net.sf.okapi.steps.rainbowkit.postprocess.Parameters) mergingStep.getParameters();
         // params.setForceTargetLocale(true);
-
         return mergingStep;
     }
 
     /**
      * Create a filter configuration mapper
+     *
      * @param filter Filter being used
-     * @return Configuration mapper, including common configurations and the corresponding to the current filter
+     * @return Configuration mapper, including common configurations and the
+     * corresponding to the current filter
      */
     private static IFilterConfigurationMapper createFilterConfigurationMapper(IFilter filter) {
 
@@ -262,7 +264,6 @@ public class OkapiClient {
 
 
     /* OKAPI INTERACTION */
-
     /**
      * Generate pack
      *
@@ -272,18 +273,25 @@ public class OkapiClient {
      * @param targetLanguage Target language
      * @param encoding Encoding used
      * @param file File
+     * @param segmentation
+     * @param filter
+     * @param segmentBilingual
      * @return Okapi's result pack
      */
     public static OkapiPack generatePack(Locale sourceLanguage, Locale targetLanguage, Encoding encoding, File file, String segmentation, IFilter filter, Boolean segmentBilingual) {
         // Check inputs
-        if (sourceLanguage == null)
+        if (sourceLanguage == null) {
             throw new IllegalArgumentException("Source language cannot be null");
-        if (targetLanguage == null)
+        }
+        if (targetLanguage == null) {
             throw new IllegalArgumentException("Target language cannot be null");
-        if (encoding == null)
+        }
+        if (encoding == null) {
             throw new IllegalArgumentException("Input encoding cannot be null");
-        if (file == null || !file.exists() || file.isDirectory())
+        }
+        if (file == null || !file.exists() || file.isDirectory()) {
             throw new IllegalArgumentException("Input file is not valid");
+        }
 
         final Format format = Format.getFormat(file);
 
@@ -294,7 +302,9 @@ public class OkapiClient {
         IPipelineDriver driver = createOkapiPipelineDriver(file.getParent());
 
         // Filtering step
-        if (filter == null) filter = OkapiFilterFactory.getFilter(file);
+        if (filter == null) {
+            filter = OkapiFilterFactory.getFilter(file);
+        }
         driver.addStep(new RawDocumentToFilterEventsStep(filter));
 
         // Set the filter configuration map to use with the driver
@@ -307,7 +317,7 @@ public class OkapiClient {
         // XLIFFs instead are already segmented, and segmenting them further causes
         // strange outputs.
         if (!Format.isBilingual(format) || segmentBilingual) {
-        	  createSegmentationStep(sourceLanguage, segmentation, driver);
+            createSegmentationStep(sourceLanguage, segmentation, driver);
         }
 
         // Kit creation step
@@ -333,8 +343,9 @@ public class OkapiClient {
         driver.processBatch();
 
         // Check that it has been created
-        if (!packFolder.exists())
+        if (!packFolder.exists()) {
             throw new RuntimeException("The pack could not be created");
+        }
 
         // Return pack
         return new OkapiPack(packFolder);
@@ -342,6 +353,7 @@ public class OkapiClient {
 
     /**
      * Generate the derived file from a Okapi's result pack
+     *
      * @param pack Okapi Results pack
      * @return Derived file
      */
@@ -384,10 +396,14 @@ public class OkapiClient {
 
             // Return the derived file
             return pack.getDerivedFile();
-        }
-        catch ( Throwable e ) {
+        } catch (Throwable e) {
             throw new RuntimeException("Exception generating target file from " + pack.getOriginalFile().getName(), e);
         }
+    }
+    /**
+     * Private constructor (static class)
+     */
+    private OkapiClient() {
     }
 
 }

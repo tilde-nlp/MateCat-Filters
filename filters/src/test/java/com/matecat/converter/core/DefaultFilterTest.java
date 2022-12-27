@@ -1,19 +1,16 @@
 package com.matecat.converter.core;
 
 import com.matecat.filters.basefilters.DefaultFilter;
-import org.junit.Test;
-
 import java.io.File;
 import java.util.Locale;
-
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 public class DefaultFilterTest {
 
-
     /**
-     * As every sub component is tested, the only purpose of this test is to check that
-     * no exception is thrown
+     * As every sub component is tested, the only purpose of this test is to
+     * check that no exception is thrown
      */
     @Test
     public void testExtract() {

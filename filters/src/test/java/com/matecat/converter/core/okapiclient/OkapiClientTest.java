@@ -1,10 +1,9 @@
 package com.matecat.converter.core.okapiclient;
 
 import com.matecat.converter.core.encoding.Encoding;
-import org.junit.Test;
-
 import java.io.File;
 import java.util.Locale;
+import org.junit.Test;
 
 public class OkapiClientTest {
 
@@ -124,6 +123,5 @@ public class OkapiClientTest {
     public void testMIF() {
         testFile("test.mif");
     }
-
 
 }
