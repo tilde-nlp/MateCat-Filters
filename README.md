@@ -6,12 +6,10 @@
 
 As of September 2021 this fork (ZombieCat) of the Matecat archive is resurrected.
 
-The app has been Dockerized.
-
-To build a docker container:
+To locally build a docker container:
 
 ```
- docker build -t nuanxed:[TAG]
+ docker build -t nuanxed:[TAG] ./
 ```
 
 To run it:
@@ -22,7 +20,7 @@ docker run -p 8732:8732 nuanxed:[TAG]
 
 Use it:
 
-localhost:8732
+http://localhost:8732/zombie-cat
 
 
 ## Getting started
