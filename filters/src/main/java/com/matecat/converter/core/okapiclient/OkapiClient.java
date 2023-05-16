@@ -61,7 +61,7 @@ public class OkapiClient {
     /**
      * Initialization of the default segmentation rules and its folder
      */
-    public static final String SRX_RESOURCE_PATH = "/okapi/segmentation/default.srx";
+    public static final String SRX_RESOURCE_PATH = "okapi/segmentation/default.srx";
     public static final File SRX_FILE;
     static {
         // The SRX file is a resource of the application. When it is
@@ -75,7 +75,7 @@ public class OkapiClient {
             throw new RuntimeException("Cannot create a temp file for SRX rules.", e);
         }
         try {
-            FileUtils.copyInputStreamToFile(System.class.getResourceAsStream(SRX_RESOURCE_PATH), SRX_FILE);
+            FileUtils.copyInputStreamToFile(ClassLoader.getSystemResourceAsStream(SRX_RESOURCE_PATH), SRX_FILE);
         } catch (IOException e) {
             throw new RuntimeException("Cannot copy SRX rules to temp file.", e);
         }

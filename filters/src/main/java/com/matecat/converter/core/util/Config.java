@@ -39,7 +39,6 @@ public class Config {
 
 
     static {
-        //try (InputStream inputStream = System.class.getResourceAsStream("/config.properties")) {
         try (InputStream inputStream = ClassLoader.getSystemResourceAsStream("config.properties")) {
             System.out.println("inputStream: " + inputStream);
             Properties props = new Properties();
@@ -105,6 +104,8 @@ public class Config {
             if (customSegmentationFolder.isEmpty()) {
                 LOGGER.warn("custom-segmentation-folder param empty or invalid: custom segmentation disabled");
             }
+
+            LOGGER.info("done   ");
 
         } catch (Exception e) {
             throw new RuntimeException("Exception while loading config.properties.", e);

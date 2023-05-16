@@ -46,7 +46,7 @@ import java.util.Set;
     public class OkapiFilterFactory {
 
     // Path of the configurations
-    public static final String OKAPI_CUSTOM_CONFIGS_PATH = "/okapi/configurations/";
+    public static final String OKAPI_CUSTOM_CONFIGS_PATH = "okapi/configurations/";
 
     public static final String XML_CONFIG_FILENAME = "okf_xmlstream-custom.fprm";
     public static final String HTML_CONFIG_FILENAME = "okf_html-custom.fprm";
@@ -227,7 +227,7 @@ import java.util.Set;
         HtmlFilter filter = new HtmlFilter();
         try {
             net.sf.okapi.filters.html.Parameters params = (net.sf.okapi.filters.html.Parameters) filter.getParameters();
-            String config = IOUtils.toString(System.class.getResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + HTML_CONFIG_FILENAME), "UTF-8");
+            String config = IOUtils.toString(ClassLoader.getSystemResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + HTML_CONFIG_FILENAME), "UTF-8");
             params.fromString(config);
         } catch (IOException e) {
             System.err.println("Dita custom configuration could not be loaded");
@@ -375,7 +375,7 @@ import java.util.Set;
         RegexFilter filter = new RegexFilter();
         try {
             net.sf.okapi.filters.regex.Parameters params = (net.sf.okapi.filters.regex.Parameters) filter.getParameters();
-            String config = IOUtils.toString(System.class.getResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + "okf_regex@macstrings.fprm"), "UTF-8");
+            String config = IOUtils.toString(ClassLoader.getSystemResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + "okf_regex@macstrings.fprm"), "UTF-8");
             params.fromString(config);
         } catch (IOException e) {
             System.err.println("Strings custom configuration could not be loaded");
@@ -387,7 +387,7 @@ import java.util.Set;
         RegexFilter filter = new RegexFilter();
         try {
             net.sf.okapi.filters.regex.Parameters params = (net.sf.okapi.filters.regex.Parameters) filter.getParameters();
-            String config = IOUtils.toString(System.class.getResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + "okf_regex@srt.fprm"), "UTF-8");
+            String config = IOUtils.toString(ClassLoader.getSystemResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + "okf_regex@srt.fprm"), "UTF-8");
             params.fromString(config);
         } catch (IOException e) {
             System.err.println("Strings custom configuration could not be loaded");
@@ -399,7 +399,7 @@ import java.util.Set;
         XMLFilter filter = new XMLFilter();
         try {
             net.sf.okapi.filters.its.Parameters params = (net.sf.okapi.filters.its.Parameters) filter.getParameters();
-            String config = IOUtils.toString(System.class.getResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + "okf_xml@resx.fprm"), "UTF-8");
+            String config = IOUtils.toString(ClassLoader.getSystemResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + "okf_xml@resx.fprm"), "UTF-8");
             params.fromString(config);
         } catch (IOException e) {
             System.err.println("XML custom configuration could not be loaded");
@@ -411,7 +411,7 @@ import java.util.Set;
         XMLFilter filter = new XMLFilter();
         try {
             net.sf.okapi.filters.its.Parameters params = (net.sf.okapi.filters.its.Parameters) filter.getParameters();
-            String config = IOUtils.toString(System.class.getResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + "okf_xml@wix.fprm"), "UTF-8");
+            String config = IOUtils.toString(ClassLoader.getSystemResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + "okf_xml@wix.fprm"), "UTF-8");
             params.fromString(config);
         } catch (IOException e) {
             System.err.println("XML custom configuration could not be loaded");
@@ -423,7 +423,7 @@ import java.util.Set;
         XmlStreamFilter filter = new XmlStreamFilter();
         try {
             net.sf.okapi.filters.xmlstream.Parameters params = (net.sf.okapi.filters.xmlstream.Parameters) filter.getParameters();
-            String config = IOUtils.toString(System.class.getResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + XML_CONFIG_FILENAME), "UTF-8");
+            String config = IOUtils.toString(ClassLoader.getSystemResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + XML_CONFIG_FILENAME), "UTF-8");
             params.fromString(config);
         } catch (IOException e) {
             System.err.println("XML custom configuration could not be loaded");
@@ -449,7 +449,7 @@ import java.util.Set;
         XmlStreamFilter filter = new XmlStreamFilter();
         try {
             net.sf.okapi.filters.xmlstream.Parameters params = (net.sf.okapi.filters.xmlstream.Parameters) filter.getParameters();
-            String config = IOUtils.toString(System.class.getResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + DITA_CONFIG_FILENAME), "UTF-8");
+            String config = IOUtils.toString(ClassLoader.getSystemResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + DITA_CONFIG_FILENAME), "UTF-8");
             params.fromString(config);
         } catch (IOException e) {
             System.err.println("Dita custom configuration could not be loaded");
