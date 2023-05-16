@@ -1,14 +1,17 @@
 package com.matecat.converter.core.util;
 
-import java.io.File;
-import java.io.InputStream;
-import java.net.InetSocketAddress;
-import java.util.*;
-
 import com.matecat.filters.basefilters.DefaultFilter;
 import com.matecat.filters.basefilters.IFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
 
 
 /**
@@ -34,13 +37,17 @@ public class Config {
 
     public static final List<InetSocketAddress> winConvs = new ArrayList<>();
 
-    
+
     static {
-        try (InputStream inputStream = System.class.getResourceAsStream("/config.properties")) {
+        //try (InputStream inputStream = System.class.getResourceAsStream("/config.properties")) {
+        try (InputStream inputStream = ClassLoader.getSystemResourceAsStream("config.properties")) {
+            System.out.println("inputStream: " + inputStream);
             Properties props = new Properties();
             props.load(inputStream);
 
             serverPort = Integer.parseInt(props.getProperty("server-port"));
+
+            System.out.println("serverPort: " + serverPort);
 
             String cacheFolderVal = checkFolderValidity(props.getProperty("cache-folder"), true, true);
             if (cacheFolderVal.isEmpty()) {
@@ -57,7 +64,7 @@ public class Config {
 
             errorsFolder = checkFolderValidity(props.getProperty("errors-folder"), true, true);
             if (errorsFolder.isEmpty()) {
-            	  LOGGER.warn("error-folder param empty or invalid: errors backup disabled");
+                LOGGER.warn("error-folder param empty or invalid: errors backup disabled");
             }
 
             deleteOnClose = Boolean.parseBoolean(props.getProperty("delete-on-close"));
@@ -95,20 +102,19 @@ public class Config {
 
             // load the custom segmentation directory value
             customSegmentationFolder = checkFolderValidity(props.getProperty("custom-segmentation-folder"), false, false);
-            if( customSegmentationFolder.isEmpty() ) {
-            	  LOGGER.warn("custom-segmentation-folder param empty or invalid: custom segmentation disabled");
+            if (customSegmentationFolder.isEmpty()) {
+                LOGGER.warn("custom-segmentation-folder param empty or invalid: custom segmentation disabled");
             }
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("Exception while loading config.properties.", e);
         }
     }
 
-    
+
     /**
      * Check the validity of an user provided folder.
-     * 
+     *
      * @param folderPath
      * @param createIfNotExists
      * @param checkWritePermission
@@ -116,45 +122,45 @@ public class Config {
      */
     static String checkFolderValidity(String folderPath, boolean createIfNotExists, boolean checkWritePermission) {
         // no path provided
-        if(folderPath == null || folderPath.trim().isEmpty()) {
-        	return "";
+        if (folderPath == null || folderPath.trim().isEmpty()) {
+            return "";
         }
 
         File folder = new File(folderPath);
 
         // path provided, but the directory does not exist
-        if(!folder.isDirectory()) {
+        if (!folder.isDirectory()) {
 
-          // not asked to create it
-          if(!createIfNotExists) {
-                  throw new RuntimeException("Folder " + folderPath + " provided in config file does not exist");
-          }
+            // not asked to create it
+            if (!createIfNotExists) {
+                throw new RuntimeException("Folder " + folderPath + " provided in config file does not exist");
+            }
 
-          // failure when attempting to create it
-          if(!folder.mkdirs()) {
-            throw new RuntimeException("Failed to create path: " + folderPath + ".");
-          }
+            // failure when attempting to create it
+            if (!folder.mkdirs()) {
+                throw new RuntimeException("Failed to create path: " + folderPath + ".");
+            }
         }
 
         // path provided, directory exists but cannot read because of permission issues
-        if(!folder.canRead()) {
-          throw new RuntimeException("No read permission for folder: " + folderPath + ".");
+        if (!folder.canRead()) {
+            throw new RuntimeException("No read permission for folder: " + folderPath + ".");
         }
 
         // need write permission, but is not available
-        if(checkWritePermission && !folder.canWrite()) {
-          throw new RuntimeException("No write permission for folder: " + folderPath + ".");
+        if (checkWritePermission && !folder.canWrite()) {
+            throw new RuntimeException("No write permission for folder: " + folderPath + ".");
         }
 
         // everything's alright, folder does exist and apparently no permission issues occurred. Make sure the path ends  with a '/'
         return folderPath.endsWith("/") ? folderPath : folderPath + "/";
     }
-    
 
 
     /**
      * Private constructor (static class)
      */
-    private Config() {}
+    private Config() {
+    }
 
 }

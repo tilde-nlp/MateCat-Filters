@@ -1,5 +1,5 @@
 # BUILD IMAGE
-FROM maven:3.8.6-eclipse-temurin-8 as maven
+FROM maven:3.9.1-eclipse-temurin-11 as maven
 
 # copy the root parent-pom
 COPY pom.xml .
@@ -22,7 +22,7 @@ RUN mvn clean package -DskipTests
 
 # DEPLOY IMAGE
 # Use a slimmer deploy image with fewer layers
-FROM eclipse-temurin:8u352-b08-jre-ubi9-minimal
+FROM eclipse-temurin:11.0.19_7-jre-ubi9-minimal
 
 # copy over the config file from the maven image
 COPY --from=maven /build/src/main/resources/config.sample.properties config.properties
