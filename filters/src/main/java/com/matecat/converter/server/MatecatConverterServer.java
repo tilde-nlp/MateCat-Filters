@@ -50,7 +50,7 @@ public class MatecatConverterServer {
             if (port <= 0) {
                 throw new Exception();
             }
-            this.serverPort = 8732;
+            this.serverPort = port;
             init();
         } catch (Exception e) {
             throw new RuntimeException("There is no default port specified in the configuration");

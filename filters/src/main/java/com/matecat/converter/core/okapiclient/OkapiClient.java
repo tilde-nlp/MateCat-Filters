@@ -60,6 +60,7 @@ public class OkapiClient {
 
     /**
      * Initialization of the default segmentation rules and its folder
+     * TODO: NX: custom srx file - how to merge
      */
     public static final String SRX_RESOURCE_PATH = "okapi/segmentation/default.srx";
     public static final File SRX_FILE;
@@ -76,6 +77,7 @@ public class OkapiClient {
         }
         try {
             FileUtils.copyInputStreamToFile(ClassLoader.getSystemResourceAsStream(SRX_RESOURCE_PATH), SRX_FILE);
+            LOGGER.info("copyInputStreamToFile: " + SRX_FILE);
         } catch (IOException e) {
             throw new RuntimeException("Cannot copy SRX rules to temp file.", e);
         }
