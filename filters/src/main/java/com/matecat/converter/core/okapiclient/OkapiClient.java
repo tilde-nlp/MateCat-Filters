@@ -312,7 +312,9 @@ public class OkapiClient {
         // XLIFFs instead are already segmented, and segmenting them further causes
         // strange outputs.
         if (!Format.isBilingual(format) || segmentBilingual) {
-        	  createSegmentationStep(sourceLanguage, segmentation, driver);
+            // TODO: NX: make segmentation into a param
+            // Also when not using segmentation I got <ept> tags instead of <g> tags, related?
+            createSegmentationStep(sourceLanguage, segmentation, driver);
         }
 
         // Kit creation step
