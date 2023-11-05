@@ -19,4 +19,5 @@ FROM amazoncorretto:8-alpine-jre
 
 COPY --from=build /build/release /app
 WORKDIR /app
+EXPOSE 8732
 CMD ["java", "-cp", ".:filters.jar", "com.matecat.converter.Main"]
