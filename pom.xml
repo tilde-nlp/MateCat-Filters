@@ -6,20 +6,21 @@
 
   <groupId>com.matecat</groupId>
   <artifactId>filters-parent</artifactId>
-  <version>1.2.5</version>
+  <version>2.1.1</version>
   <packaging>pom</packaging>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
-    <okapi.version>0.36</okapi.version>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+    <okapi.version>1.45.0</okapi.version>
     <!--
     The following parameter is not used by Maven or any other part
     of this code, but we keep it updated in order to make it clear
     which Okapi code we are using in our builds.
-    -->
     <okapi.commit>c475ad8598d58202acad5a3cf508836aa0dc8d2a</okapi.commit>
+    -->
+    <okapi.commit>unknowncommithash</okapi.commit>
   </properties>
 
   <repositories>
@@ -39,14 +40,14 @@
     <plugins>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.22.1</version>
+        <version>3.2.1</version>
         <configuration>
           <skipTests>true</skipTests>
         </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>3.2.1</version>
+        <version>3.5.1</version>
         <executions>
           <execution>
             <phase>package</phase>
