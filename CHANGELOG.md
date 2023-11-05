@@ -1,5 +1,9 @@
 # MateCat Filters Changelog
 
+## 2.1.1 (2023-11-06)
+
+* Fix vulnerabilities by update dependencies
+
 ## 2.1.0 (2023-05-15)
 
 * Upgraded to Java 11
