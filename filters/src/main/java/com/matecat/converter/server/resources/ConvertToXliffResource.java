@@ -69,7 +69,7 @@ public class ConvertToXliffResource {
         // TODO: refactor internal classes to be filename/extension agnostic
         filename = FilenameUtils.removeExtension(filename) + "." + FilenameUtils.getExtension(filename).toLowerCase();
 
-        LOGGER.info("SOURCE > XLIFF request: file=<{}> source=<{}> target=<{}>", filename, sourceLanguageCode, targetLanguageCode);
+        LOGGER.info("SOURCE > XLIFF request: file=<{}> source=<{}> target=<{}> segmentation=<{}>", filename, sourceLanguageCode, targetLanguageCode, segmentation);
 
         Project project = null;
         Response response = null;

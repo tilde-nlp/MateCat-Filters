@@ -1,4 +1,4 @@
-FROM maven:3-eclipse-temurin-8 AS build
+FROM maven:3-eclipse-temurin-11 AS build
 
 # Build dependencies
 COPY pom.xml .
@@ -15,7 +15,7 @@ RUN mkdir release && \
     cp src/main/resources/config.sample.properties release/config.properties
 
 # Final image
-FROM amazoncorretto:8-alpine-jre
+FROM amazoncorretto:11-al2023-headless
 
 COPY --from=build /build/release /app
 WORKDIR /app

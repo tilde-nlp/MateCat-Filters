@@ -8,6 +8,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.io.InputStream;
 
 
 /**
@@ -16,7 +17,7 @@ import java.io.IOException;
 @Path("/")
 public class ClientResource {
 
-    private static final String CLIENT_HTML_PATH = "/client/client.html";
+    private static final String CLIENT_HTML_PATH = "client/client.html";
     private static final String CLIENT_HTML;
 
     static {
@@ -25,7 +26,9 @@ public class ClientResource {
             filtersVersion = "[version number not available]";
         }
         try {
-            String html = IOUtils.toString(System.class.getResourceAsStream(CLIENT_HTML_PATH), "UTF-8");
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream(CLIENT_HTML_PATH);
+            assert inputStream != null;
+            String html = IOUtils.toString(inputStream, "UTF-8");
             // Handlebar-like variable substitution
             CLIENT_HTML = html.replace("{{filtersVersion}}", filtersVersion);
         } catch (IOException e) {
@@ -35,6 +38,7 @@ public class ClientResource {
 
     /**
      * Output the client
+     *
      * @return Client
      */
     @GET

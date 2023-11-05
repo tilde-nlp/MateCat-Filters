@@ -425,6 +425,7 @@ public class XliffProcessor {
             // identical to the original, without translations.
             // To fix this I replace the target in the manifest with
             // the one defined in the XLIFF.
+            // TODO: NX: cause of no target?
             manifest = manifest.replaceFirst("(<manifest [^>]* ?target=\")[^\"]+\"", "$1" + targetLanguage + "\"");
 
             // Extract source filename from manifest

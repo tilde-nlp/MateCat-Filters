@@ -1,6 +1,42 @@
 <p align="center"><img src="http://i.imgur.com/J8FSuWi.png"></p>
 
 
+
+# Resurrection
+
+As of September 2021 this fork (ZombieCat) of the Matecat archive is resurrected.
+
+To locally build a docker container:
+
+```
+ docker build -t nuanxed:[TAG] ./
+```
+
+To run it:
+
+```
+docker run -p 8732:8732 nuanxed:[TAG]
+```
+
+Use it:
+
+http://localhost:8732/zombie-cat
+
+
+## Getting started
+
+Navigate the [wiki](https://github.com/nuanxed/MateCat-Filters/wiki/) to learn how to [use the API](https://github.com/nuanxed/MateCat-Filters/wiki/API-documentation).
+
+
+
+
+
+Below is legacy:
+
+
+------------------------------------------------
+
+
 # Retirement
 
 As of **June 2020** this repository is put in read only mode (archived).
@@ -39,4 +75,4 @@ Filters uses segmentation rules defined by the Unicode consortium, plus another 
 
 ## Getting started
 
-Navigate the [wiki](https://github.com/matecat/MateCat-Filters/wiki/) to learn how to [use the API](https://github.com/matecat/MateCat-Filters/wiki/API-documentation).
+Navigate the [wiki](https://github.com/nuanxed/MateCat-Filters/wiki/) to learn how to [use the API](https://github.com/nuanxed/MateCat-Filters/wiki/API-documentation).

@@ -44,13 +44,15 @@ public class MatecatConverterServer {
      */
     public MatecatConverterServer() {
         try {
-            int port = Config.serverPort;
-            if (port <= 0)
+           int port = Config.serverPort;
+
+            LOGGER.info("read port from config: ", port);
+            if (port <= 0) {
                 throw new Exception();
+            }
             this.serverPort = port;
             init();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("There is no default port specified in the configuration");
         }
     }
@@ -58,6 +60,7 @@ public class MatecatConverterServer {
 
     /**
      * Constructor admitting a configured port
+     *
      * @param serverPort Port to use
      */
     public MatecatConverterServer(int serverPort) {
@@ -82,6 +85,7 @@ public class MatecatConverterServer {
 
     /**
      * Check if the server has been started (this is, ready to receive requests)
+     *
      * @return True if started, false otherwise
      */
     public boolean isStarted() {
@@ -91,6 +95,7 @@ public class MatecatConverterServer {
 
     /**
      * Check if the server is stopped
+     *
      * @return True if stopped, false otherwise
      */
     public boolean isStopped() {
@@ -100,6 +105,7 @@ public class MatecatConverterServer {
 
     /**
      * Get external IP
+     *
      * @return External IP
      */
     private String getExternalIP() {
@@ -109,7 +115,8 @@ public class MatecatConverterServer {
                 BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
                 externalIP = in.readLine();
                 in.close();
-            } catch (IOException ignored) {}
+            } catch (IOException ignored) {
+            }
         }
         return externalIP;
     }
@@ -117,14 +124,15 @@ public class MatecatConverterServer {
 
     /**
      * Get local IP
+     *
      * @return Local IP
      */
     private String getLocalIP() {
         if (localIP == null) {
             try {
                 localIP = InetAddress.getLocalHost().getHostAddress();
+            } catch (IOException ignored) {
             }
-            catch (IOException ignored) {}
         }
         return localIP;
     }
@@ -137,12 +145,10 @@ public class MatecatConverterServer {
             initServer();
             server.start();
             LOGGER.info("Server started at {}:{} / {}:{}", getExternalIP(), serverPort, getLocalIP(), serverPort);
-        }
-        catch (BindException e) {
+        } catch (BindException e) {
             LOGGER.error("Port " + serverPort + " already in use");
             System.exit(-1);
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             LOGGER.error("Server has been interrupted", e);
             throw new RuntimeException("The server has been interrupted");
         } catch (Exception e) {
@@ -168,12 +174,23 @@ public class MatecatConverterServer {
         ServletContainer servletContainer = new ServletContainer(resourceConfig);
         ServletHolder sh = new ServletHolder(servletContainer);
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        context.setContextPath("/");
+
+
+        String contextPath = System.getenv("MATECAT_API_CONTEXT_PATH");
+
+        if (contextPath == null || contextPath == "") {
+            contextPath = "/";
+        }
+
+        LOGGER.info("MateCat starting using contextPath {}", contextPath);
+
+        context.setContextPath(contextPath);
         context.addServlet(sh, "/*");
 
         // Initiate it
         this.server = new Server(serverPort);
         server.setHandler(context);
+        LOGGER.info("initServer DONE");
     }
 
 }

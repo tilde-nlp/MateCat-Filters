@@ -19,19 +19,19 @@ import net.sf.okapi.filters.php.PHPContentFilter;
 import net.sf.okapi.filters.plaintext.PlainTextFilter;
 import net.sf.okapi.filters.po.POFilter;
 import net.sf.okapi.filters.properties.PropertiesFilter;
-import net.sf.okapi.filters.table.TableFilter;
-import net.sf.okapi.filters.table.tsv.TabSeparatedValuesFilter;
-import net.sf.okapi.filters.xml.XMLFilter;
-import net.sf.okapi.filters.yaml.YamlFilter;
 import net.sf.okapi.filters.rainbowkit.RainbowKitFilter;
 import net.sf.okapi.filters.regex.RegexFilter;
+import net.sf.okapi.filters.table.TableFilter;
 import net.sf.okapi.filters.table.csv.CommaSeparatedValuesFilter;
+import net.sf.okapi.filters.table.tsv.TabSeparatedValuesFilter;
 import net.sf.okapi.filters.ts.TsFilter;
 import net.sf.okapi.filters.ttx.TTXFilter;
 import net.sf.okapi.filters.txml.TXMLFilter;
 import net.sf.okapi.filters.xini.XINIFilter;
 import net.sf.okapi.filters.xliff.XLIFFFilter;
+import net.sf.okapi.filters.xml.XMLFilter;
 import net.sf.okapi.filters.xmlstream.XmlStreamFilter;
+import net.sf.okapi.filters.yaml.YamlFilter;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -43,10 +43,10 @@ import java.util.Set;
 /**
  * Filter factory
  */
-    public class OkapiFilterFactory {
+public class OkapiFilterFactory {
 
     // Path of the configurations
-    public static final String OKAPI_CUSTOM_CONFIGS_PATH = "/okapi/configurations/";
+    public static final String OKAPI_CUSTOM_CONFIGS_PATH = "okapi/configurations/";
 
     public static final String XML_CONFIG_FILENAME = "okf_xmlstream-custom.fprm";
     public static final String HTML_CONFIG_FILENAME = "okf_html-custom.fprm";
@@ -54,6 +54,7 @@ import java.util.Set;
 
     // Formats supported by the filter factory
     protected static final Set<Format> SUPPORTED_FORMATS;
+
     static {
         SUPPORTED_FORMATS = new HashSet<>(Arrays.asList(
                 Format.DOCM,
@@ -115,6 +116,7 @@ import java.util.Set;
 
     /**
      * Check if Okapi supports a format
+     *
      * @param format Format
      * @return True if it's supported, false otherwise
      */
@@ -125,6 +127,7 @@ import java.util.Set;
 
     /**
      * Get the corresponding filter for a given format
+     *
      * @return
      */
     protected static IFilter getFilter(File file) {
@@ -143,44 +146,73 @@ import java.util.Set;
             case XLSM:
             case XLSX:
             case XLTM:
-            case XLTX:      return getOpenXMLFilter();
+            case XLTX:
+                return getOpenXMLFilter();
             case HTML:
             case XHTML:
-            case HTM:       return getHtmlFilter();
+            case HTM:
+                return getHtmlFilter();
             case ODP:
             case OTP:
             case ODS:
             case OTS:
             case ODT:
-            case OTT:       return getOpenOfficeFilter();
+            case OTT:
+                return getOpenOfficeFilter();
             case SDLXLIFF:
             case XLF:
-            case XLIFF:     return getXliffFilter();
-            case TXT:       return getPlainTextFilter();
-            case PHP:       return getPhpFilter();
-            case PROPERTIES:return getPropertiesFilter();
-            case PO:        return getPoFilter();
-            case JSON:      return getJsonFilter();
-            case IDML:      return getIdmlFilter();
-            case ICML:      return getIcmlFilter();
-            case TXML:      return getTxmlFilter();
-            case YAML:      return getYmlFilter();
-            case RKM:       return getRkmFilter();
-            case MIF:       return getMifFilter();
-            case XML:       return getXmlFilter();
-            case DITA:      return getDitaFilter();
-            case CSV:       return getCSVFilter();
-            case ARCHIVE:   return getArchiveFilter();
-            case XINI:      return getXiniFilter();
-            case TTX:       return getTTXFilter();
-            case TS:        return getTSFilter();
-            case STRINGS:   return getStringsFilter();
-            case RESX:      return getRESXFilter();
-            case WIX:       return getWixFilter();
-            case TSV:       return getTSVFilter();
-            case SRT:       return getSRTFilter();
-            case DTD:       return getDTDFilter();
-            default: throw new RuntimeException("There is no filter configured for the format: " + format);
+            case XLIFF:
+                return getXliffFilter();
+            case TXT:
+                return getPlainTextFilter();
+            case PHP:
+                return getPhpFilter();
+            case PROPERTIES:
+                return getPropertiesFilter();
+            case PO:
+                return getPoFilter();
+            case JSON:
+                return getJsonFilter();
+            case IDML:
+                return getIdmlFilter();
+            case ICML:
+                return getIcmlFilter();
+            case TXML:
+                return getTxmlFilter();
+            case YAML:
+                return getYmlFilter();
+            case RKM:
+                return getRkmFilter();
+            case MIF:
+                return getMifFilter();
+            case XML:
+                return getXmlFilter();
+            case DITA:
+                return getDitaFilter();
+            case CSV:
+                return getCSVFilter();
+            case ARCHIVE:
+                return getArchiveFilter();
+            case XINI:
+                return getXiniFilter();
+            case TTX:
+                return getTTXFilter();
+            case TS:
+                return getTSFilter();
+            case STRINGS:
+                return getStringsFilter();
+            case RESX:
+                return getRESXFilter();
+            case WIX:
+                return getWixFilter();
+            case TSV:
+                return getTSVFilter();
+            case SRT:
+                return getSRTFilter();
+            case DTD:
+                return getDTDFilter();
+            default:
+                throw new RuntimeException("There is no filter configured for the format: " + format);
         }
     }
 
@@ -191,7 +223,7 @@ import java.util.Set;
 
     private static OpenXMLFilter getOpenXMLFilter() {
         OpenXMLFilter filter = new OpenXMLFilter();
-        net.sf.okapi.filters.openxml.ConditionalParameters conditionalParameters = ( net.sf.okapi.filters.openxml.ConditionalParameters) filter.getParameters();
+        net.sf.okapi.filters.openxml.ConditionalParameters conditionalParameters = (net.sf.okapi.filters.openxml.ConditionalParameters) filter.getParameters();
         // Global
         conditionalParameters.setCleanupAggressively(true);
         conditionalParameters.setTranslateDocProperties(false);
@@ -227,7 +259,7 @@ import java.util.Set;
         HtmlFilter filter = new HtmlFilter();
         try {
             net.sf.okapi.filters.html.Parameters params = (net.sf.okapi.filters.html.Parameters) filter.getParameters();
-            String config = IOUtils.toString(System.class.getResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + HTML_CONFIG_FILENAME), "UTF-8");
+            String config = IOUtils.toString(ClassLoader.getSystemResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + HTML_CONFIG_FILENAME), "UTF-8");
             params.fromString(config);
         } catch (IOException e) {
             System.err.println("Dita custom configuration could not be loaded");
@@ -273,6 +305,7 @@ import java.util.Set;
         // params.setDecodeByteValues();
         return filter;
     }
+
     private static XLIFFFilter getXliffFilter() {
         XLIFFFilter filter = new XLIFFFilter();
         net.sf.okapi.filters.xliff.Parameters params = (net.sf.okapi.filters.xliff.Parameters) filter.getParameters();
@@ -285,6 +318,11 @@ import java.util.Set;
         // target segment including also <mrk> (that couldn't be computed because the <seg-source> was ignored. So it's
         // better to ignore <source> instead, and always use <seg-source> as default reference.
         params.setAlwaysUseSegSource(true);
+
+        // NX additions
+        params.setAllowEmptyTargets(false);
+        //params.setIncludeIts(true);
+        System.out.println("APPLY XLIFF FILTER: " + params);
         return filter;
     }
 
@@ -375,7 +413,7 @@ import java.util.Set;
         RegexFilter filter = new RegexFilter();
         try {
             net.sf.okapi.filters.regex.Parameters params = (net.sf.okapi.filters.regex.Parameters) filter.getParameters();
-            String config = IOUtils.toString(System.class.getResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + "okf_regex@macstrings.fprm"), "UTF-8");
+            String config = IOUtils.toString(ClassLoader.getSystemResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + "okf_regex@macstrings.fprm"), "UTF-8");
             params.fromString(config);
         } catch (IOException e) {
             System.err.println("Strings custom configuration could not be loaded");
@@ -387,7 +425,7 @@ import java.util.Set;
         RegexFilter filter = new RegexFilter();
         try {
             net.sf.okapi.filters.regex.Parameters params = (net.sf.okapi.filters.regex.Parameters) filter.getParameters();
-            String config = IOUtils.toString(System.class.getResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + "okf_regex@srt.fprm"), "UTF-8");
+            String config = IOUtils.toString(ClassLoader.getSystemResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + "okf_regex@srt.fprm"), "UTF-8");
             params.fromString(config);
         } catch (IOException e) {
             System.err.println("Strings custom configuration could not be loaded");
@@ -399,7 +437,7 @@ import java.util.Set;
         XMLFilter filter = new XMLFilter();
         try {
             net.sf.okapi.filters.its.Parameters params = (net.sf.okapi.filters.its.Parameters) filter.getParameters();
-            String config = IOUtils.toString(System.class.getResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + "okf_xml@resx.fprm"), "UTF-8");
+            String config = IOUtils.toString(ClassLoader.getSystemResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + "okf_xml@resx.fprm"), "UTF-8");
             params.fromString(config);
         } catch (IOException e) {
             System.err.println("XML custom configuration could not be loaded");
@@ -411,7 +449,7 @@ import java.util.Set;
         XMLFilter filter = new XMLFilter();
         try {
             net.sf.okapi.filters.its.Parameters params = (net.sf.okapi.filters.its.Parameters) filter.getParameters();
-            String config = IOUtils.toString(System.class.getResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + "okf_xml@wix.fprm"), "UTF-8");
+            String config = IOUtils.toString(ClassLoader.getSystemResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + "okf_xml@wix.fprm"), "UTF-8");
             params.fromString(config);
         } catch (IOException e) {
             System.err.println("XML custom configuration could not be loaded");
@@ -423,7 +461,7 @@ import java.util.Set;
         XmlStreamFilter filter = new XmlStreamFilter();
         try {
             net.sf.okapi.filters.xmlstream.Parameters params = (net.sf.okapi.filters.xmlstream.Parameters) filter.getParameters();
-            String config = IOUtils.toString(System.class.getResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + XML_CONFIG_FILENAME), "UTF-8");
+            String config = IOUtils.toString(ClassLoader.getSystemResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + XML_CONFIG_FILENAME), "UTF-8");
             params.fromString(config);
         } catch (IOException e) {
             System.err.println("XML custom configuration could not be loaded");
@@ -449,7 +487,7 @@ import java.util.Set;
         XmlStreamFilter filter = new XmlStreamFilter();
         try {
             net.sf.okapi.filters.xmlstream.Parameters params = (net.sf.okapi.filters.xmlstream.Parameters) filter.getParameters();
-            String config = IOUtils.toString(System.class.getResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + DITA_CONFIG_FILENAME), "UTF-8");
+            String config = IOUtils.toString(ClassLoader.getSystemResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + DITA_CONFIG_FILENAME), "UTF-8");
             params.fromString(config);
         } catch (IOException e) {
             System.err.println("Dita custom configuration could not be loaded");
