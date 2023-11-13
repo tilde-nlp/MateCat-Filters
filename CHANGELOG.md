@@ -1,5 +1,10 @@
 # MateCat Filters Changelog
 
+## 1.2.14 (2023-11-13)
+* Fix & update CDN scripts
+* Updated dependencies
+
+
 ## 1.2.13 (2022-12-27)
 
 * Fix deprecated Java functions
