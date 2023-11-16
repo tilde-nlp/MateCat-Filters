@@ -2,10 +2,10 @@ package com.matecat.converter.server.resources;
 
 import com.matecat.converter.server.JSONResponseFactory;
 import com.matecat.converter.server.MatecatConverterServer;
+import jakarta.ws.rs.Path;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
-import javax.ws.rs.Path;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
