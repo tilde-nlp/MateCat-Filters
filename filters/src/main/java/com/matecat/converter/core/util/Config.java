@@ -40,7 +40,7 @@ public class Config {
 
             SERVER_PORT = Integer.parseInt(props.getProperty("server-port"));
 
-            System.out.println("serverPort: " + serverPort);
+            LOGGER.info("serverPort: " + SERVER_PORT);
 
             String cacheFolderVal = checkFolderValidity(props.getProperty("cache-folder"), true, true);
             if (cacheFolderVal.isEmpty()) {

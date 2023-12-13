@@ -38,11 +38,16 @@ import net.sf.okapi.filters.xml.XMLFilter;
 import net.sf.okapi.filters.xmlstream.XmlStreamFilter;
 import net.sf.okapi.filters.yaml.YamlFilter;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Filter factory
  */
 public class OkapiFilterFactory {
+
+    // Logger
+    private static final Logger LOGGER = LoggerFactory.getLogger(OkapiFilterFactory.class);
 
     // Path of the configurations
     public static final String OKAPI_CUSTOM_CONFIGS_PATH = "okapi/configurations/";
@@ -259,7 +264,7 @@ public class OkapiFilterFactory {
             String config = IOUtils.toString(OkapiFilterFactory.class.getClassLoader().getResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + HTML_CONFIG_FILENAME), "UTF-8");
             params.fromString(config);
         } catch (IOException e) {
-            System.err.println("Dita custom configuration could not be loaded");
+            LOGGER.error("Dita custom configuration could not be loaded", e);
         }
         return filter;
     }
@@ -319,7 +324,7 @@ public class OkapiFilterFactory {
         // NX additions
         params.setAllowEmptyTargets(false);
         //params.setIncludeIts(true);
-        System.out.println("APPLY XLIFF FILTER: " + params);
+        LOGGER.info("APPLY XLIFF FILTER: " + params);
         return filter;
     }
 
@@ -413,7 +418,7 @@ public class OkapiFilterFactory {
             String config = IOUtils.toString(OkapiFilterFactory.class.getClassLoader().getResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + "okf_regex@macstrings.fprm"), "UTF-8");
             params.fromString(config);
         } catch (IOException e) {
-            System.err.println("Strings custom configuration could not be loaded");
+            LOGGER.error("Strings custom configuration could not be loaded", e);
         }
         return filter;
     }
@@ -425,7 +430,7 @@ public class OkapiFilterFactory {
             String config = IOUtils.toString(OkapiFilterFactory.class.getClassLoader().getResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + "okf_regex@srt.fprm"), "UTF-8");
             params.fromString(config);
         } catch (IOException e) {
-            System.err.println("Strings custom configuration could not be loaded");
+            LOGGER.error("Strings custom configuration could not be loaded", e);
         }
         return filter;
     }
@@ -437,7 +442,7 @@ public class OkapiFilterFactory {
             String config = IOUtils.toString(OkapiFilterFactory.class.getClassLoader().getResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + "okf_xml@resx.fprm"), "UTF-8");
             params.fromString(config);
         } catch (IOException e) {
-            System.err.println("XML custom configuration could not be loaded");
+            LOGGER.error("XML custom configuration could not be loaded", e);
         }
         return filter;
     }
@@ -449,7 +454,7 @@ public class OkapiFilterFactory {
             String config = IOUtils.toString(OkapiFilterFactory.class.getClassLoader().getResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + "okf_xml@wix.fprm"), "UTF-8");
             params.fromString(config);
         } catch (IOException e) {
-            System.err.println("XML custom configuration could not be loaded");
+            LOGGER.error("XML custom configuration could not be loaded", e);
         }
         return filter;
     }
@@ -461,7 +466,7 @@ public class OkapiFilterFactory {
             String config = IOUtils.toString(OkapiFilterFactory.class.getClassLoader().getResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + XML_CONFIG_FILENAME), "UTF-8");
             params.fromString(config);
         } catch (IOException e) {
-            System.err.println("XML custom configuration could not be loaded");
+            LOGGER.error("XML custom configuration could not be loaded", e);
         }
         IFilterConfigurationMapper cm = new FilterConfigurationMapper();
         // This configuration must be copied in the FilterConfigurationMapper
@@ -487,7 +492,7 @@ public class OkapiFilterFactory {
             String config = IOUtils.toString(OkapiFilterFactory.class.getClassLoader().getResourceAsStream(OKAPI_CUSTOM_CONFIGS_PATH + DITA_CONFIG_FILENAME), "UTF-8");
             params.fromString(config);
         } catch (IOException e) {
-            System.err.println("Dita custom configuration could not be loaded");
+            LOGGER.error("Dita custom configuration could not be loaded", e);
         }
         return filter;
     }
