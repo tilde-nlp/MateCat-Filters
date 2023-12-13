@@ -1,17 +1,17 @@
 package com.matecat.converter.server;
 
-import org.json.simple.JSONObject;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Base64;
+import org.json.simple.JSONObject;
 
 /**
  * Factory which creates JSON messages to use as http responses
  *
- * TODO: Replace the JSON response by the contents of the file. This class will be deleted.
+ * TODO: Replace the JSON response by the contents of the file. This class will
+ * be deleted.
  */
 public class JSONResponseFactory {
 
@@ -55,8 +55,5 @@ public class JSONResponseFactory {
             throw new RuntimeException();
         }
     }
-
-
-
 
 }

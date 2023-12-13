@@ -7,6 +7,7 @@ public class ConverterException extends RuntimeException {
 
     /**
      * Constructor which admits a custom error message
+     *
      * @param msg Internal error message
      */
     public ConverterException(String msg) {

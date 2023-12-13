@@ -1,15 +1,13 @@
 package com.matecat.converter.core;
 
-import org.apache.commons.io.FilenameUtils;
-
 import java.io.File;
 import java.util.*;
 import java.util.stream.Stream;
-
+import org.apache.commons.io.FilenameUtils;
 
 /**
- * Format class, which represents the supported formats by the application.
- * It also offers some util functions regarding format handling.
+ * Format class, which represents the supported formats by the application. It
+ * also offers some util functions regarding format handling.
  */
 public enum Format {
 
@@ -30,25 +28,25 @@ public enum Format {
     // Plain text formats
     public static final Set<Format> textFormats
             = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
-            TXT, CSV, XML, HTML, HTM, XHTML, PHP, JSON, TXML, YAML, XLIFF,
-            SDLXLIFF, DITA, IDML, RESX, STRINGS, PO, ARCHIVE, PROPERTIES,
-            DTD, SRT, TSV, WIX
+                    TXT, CSV, XML, HTML, HTM, XHTML, PHP, JSON, TXML, YAML, XLIFF,
+                    SDLXLIFF, DITA, IDML, RESX, STRINGS, PO, ARCHIVE, PROPERTIES,
+                    DTD, SRT, TSV, WIX
             )));
 
     // OCR formats
     public static final Set<Format> OCRFormats
             = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
-            PDF, BMP, GIF, PNG, JPEG, TIFF
+                    PDF, BMP, GIF, PNG, JPEG, TIFF
             )));
 
     public static final Set<Format> bilingualFormats
             = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
-            PO, XLF, XLIFF, SDLXLIFF
+                    PO, XLF, XLIFF, SDLXLIFF
             )));
-
 
     // Generate a dictionary mapping the extension to its enum constant
     private static final Map<String, Format> supportedFormats;
+
     static {
         supportedFormats = new HashMap<>();
         Stream.of(Format.values())
@@ -58,13 +56,14 @@ public enum Format {
                 });
     }
 
-
     public static boolean isPlainTextFormat(Format format) {
         return textFormats.contains(format);
     }
+
     public static boolean isOCRFormat(Format format) {
         return OCRFormats.contains(format);
     }
+
     public static boolean isBilingual(Format format) {
         return bilingualFormats.contains(format);
     }
@@ -76,7 +75,7 @@ public enum Format {
 
         // Return corresponding format
         // TODO: extension abbreviations should be handled better
-        Format format = null;
+        Format format;
         switch (extension) {
             case "jpg":
                 format = Format.JPEG;
@@ -92,8 +91,9 @@ public enum Format {
         }
 
         // If it is not supported, throw an exception
-        if (format == null)
+        if (format == null) {
             throw new UnsupportedFormatException(extension);
+        }
 
         // Else, return it
         return format;
@@ -117,8 +117,9 @@ public enum Format {
     }
 
     public static class UnsupportedFormatException extends IllegalArgumentException {
+
         public UnsupportedFormatException(String format) {
-            super("Format \""+ format +"\" is not supported");
+            super("Format \"" + format + "\" is not supported");
         }
     }
 

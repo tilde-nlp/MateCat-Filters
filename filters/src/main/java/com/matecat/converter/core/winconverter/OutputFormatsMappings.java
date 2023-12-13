@@ -1,7 +1,6 @@
 package com.matecat.converter.core.winconverter;
 
 import com.matecat.converter.core.Format;
-
 import java.util.HashMap;
 import java.util.Map;
 

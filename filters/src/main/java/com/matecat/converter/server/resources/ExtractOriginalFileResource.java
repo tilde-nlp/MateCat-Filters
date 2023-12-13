@@ -4,17 +4,18 @@ import com.matecat.converter.core.XliffProcessor;
 import com.matecat.converter.core.project.Project;
 import com.matecat.converter.core.project.ProjectFactory;
 import com.matecat.converter.server.JSONResponseFactory;
-import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-
+import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Resource taking care of the extraction of the original file from the .XLF
@@ -23,11 +24,13 @@ import java.io.InputStream;
 public class ExtractOriginalFileResource {
 
     // Logger
-    private static Logger LOGGER = LoggerFactory.getLogger(ConvertToXliffResource.class);
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConvertToXliffResource.class);
 
     /**
      * Extract the original file from the xlf
+     *
+     * @param fileInputStream
+     * @return
      */
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -43,8 +46,9 @@ public class ExtractOriginalFileResource {
         try {
 
             // Check that the input file is not null
-            if (fileInputStream == null)
+            if (fileInputStream == null) {
                 throw new IllegalArgumentException("The input file has not been sent");
+            }
 
             // Create the project
             project = ProjectFactory.createProject("to-original.xlf", fileInputStream);
@@ -60,26 +64,24 @@ public class ExtractOriginalFileResource {
 
             everythingOk = true;
             LOGGER.info("Successfully returned source file");
-        }
-
-        // If there is any error, return it
+        } // If there is any error, return it
         catch (Exception e) {
             response = Response
                     .status(Response.Status.BAD_REQUEST)
                     .entity(JSONResponseFactory.getError(e.getMessage()))
                     .build();
             LOGGER.error("Exception extracting source file from XLIFF", e);
-        }
-
-        // Close the project and streams
+        } // Close the project and streams
         finally {
             if (fileInputStream != null)
                 try {
-                    fileInputStream.close();
-                } catch (IOException ignored) {}
-            if (project != null)
-                // Delete folder only if everything went well
+                fileInputStream.close();
+            } catch (IOException ignored) {
+            }
+            if (project != null) // Delete folder only if everything went well
+            {
                 project.close(everythingOk);
+            }
         }
 
         return response;

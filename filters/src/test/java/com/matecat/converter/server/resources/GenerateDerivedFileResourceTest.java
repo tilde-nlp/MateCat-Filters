@@ -2,6 +2,10 @@ package com.matecat.converter.server.resources;
 
 import com.matecat.converter.server.JSONResponseFactory;
 import com.matecat.converter.server.MatecatConverterServer;
+import jakarta.ws.rs.Path;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -11,15 +15,9 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.junit.After;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-
-import javax.ws.rs.Path;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
-
-import static org.junit.Assert.*;
 
 
 public class GenerateDerivedFileResourceTest {

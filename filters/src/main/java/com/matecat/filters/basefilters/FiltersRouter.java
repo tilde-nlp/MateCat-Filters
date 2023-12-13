@@ -2,27 +2,30 @@ package com.matecat.filters.basefilters;
 
 import com.matecat.converter.core.XliffProcessor;
 import com.matecat.converter.core.util.Config;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FiltersRouter {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(FiltersRouter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FiltersRouter.class);
 
     private List<IFilter> filters;
 
     public FiltersRouter() {
         filters = new ArrayList<>();
-        for (Class filter : Config.customFilters) {
+        for (Class<IFilter> filter : Config.CUSTOM_FILTERS) {
             try {
-                filters.add((IFilter) filter.newInstance());
-            } catch (InstantiationException|IllegalAccessException e) {
-                throw new RuntimeException("Exception instantiating filter "+ filter, e);
+                filters.add(filter.getDeclaredConstructor().newInstance());
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException("Exception instantiating filter " + filter, e);
+            } catch (Exception ex) {
+                java.util.logging.Logger.getLogger(FiltersRouter.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -46,17 +49,19 @@ public class FiltersRouter {
             LOGGER.warn("Missing filter class name in XLIFF: using DefaultFilter");
             filterName = DefaultFilter.class.getCanonicalName();
         }
-        IFilter filter;
+        IFilter filter = null;
         try {
-            Class filterClass = Class.forName(filterName);
+            Class<IFilter> filterClass = (Class<IFilter>) Class.forName(filterName);
             if (!filterClass.equals(DefaultFilter.class)) {
                 LOGGER.info("Using custom filter: " + filterName);
             }
-            filter = (IFilter) filterClass.newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException("Exception while loading filter class "+ filterName, e);
+            filter = filterClass.getDeclaredConstructor().newInstance();
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+            throw new RuntimeException("Exception while loading filter class " + filterName, e);
+        } catch (NoSuchMethodException | SecurityException | InvocationTargetException ex) {
+            java.util.logging.Logger.getLogger(FiltersRouter.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return filter.merge(processor);
-    }
 
+        return (filter != null) ? filter.merge(processor) : null;
+    }
 }

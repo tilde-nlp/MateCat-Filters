@@ -1,50 +1,6 @@
-<p align="center"><img src="http://i.imgur.com/J8FSuWi.png"></p>
-
-
-
 # Resurrection
 
-As of September 2021 this fork (ZombieCat) of the Matecat archive is resurrected.
-
-To locally build a docker container:
-
-```
- docker build -t nuanxed:[TAG] ./
-```
-
-To run it:
-
-```
-docker run -p 8732:8732 nuanxed:[TAG]
-```
-
-Use it:
-
-http://localhost:8732/zombie-cat
-
-
-## Getting started
-
-Navigate the [wiki](https://github.com/nuanxed/MateCat-Filters/wiki/) to learn how to [use the API](https://github.com/nuanxed/MateCat-Filters/wiki/API-documentation).
-
-
-
-
-
-Below is legacy:
-
-
-------------------------------------------------
-
-
-# Retirement
-
-As of **June 2020** this repository is put in read only mode (archived).
-Translated decided to close the sources of the **MateCat Filters** project.
-The source herein corresponds to version _1.2.5_ based on Okapi version _M36_.
-
-The MateCat Filters will still be usable via the [hosted API](https://rapidapi.com/translated/api/matecat-filters/). A [basic free plan](https://docs.rapidapi.com/docs/api-pricing) will allow trial and testing.
-
+As of April 2022 this fork of the Matecat archive is resurrected.
 
 ## Convert any file to XLIFF and back
 
@@ -61,7 +17,7 @@ you are using Filters.
 ## Main features
 
 #### Plenty of supported formats
-Among others, MateCat Filters fully supports Microsoft Office formats (legacy ones too), Open Office, PDF, hypertext, and even images of scanned documents thanks to automatic OCR (using the proper external library). See the [full list](https://github.com/matecat/MateCat-Filters/wiki/Supported-file-formats) in the Wiki.
+Among others, MateCat Filters fully supports Microsoft Office formats (legacy ones too), Open Office, PDF, hypertext, and even images of scanned documents thanks to automatic OCR (using the proper external library). See the [full list](https://github.com/rbatllet/MateCat-Filters/wiki/Supported-file-formats) in the Wiki.
 
 #### Advanced segmentation
 Filters uses segmentation rules defined by the Unicode consortium, plus another set of rules specifically designed for CAT Tools. This is why Filters can properly split sentences even in uncommon languages like Mongolian.
@@ -75,4 +31,4 @@ Filters uses segmentation rules defined by the Unicode consortium, plus another 
 
 ## Getting started
 
-Navigate the [wiki](https://github.com/nuanxed/MateCat-Filters/wiki/) to learn how to [use the API](https://github.com/nuanxed/MateCat-Filters/wiki/API-documentation).
+Navigate the [wiki](https://github.com/rbatllet/MateCat-Filters/wiki/) to learn how to [use the API](https://github.com/rbatllet/MateCat-Filters/wiki/API-documentation).

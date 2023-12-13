@@ -1,15 +1,12 @@
 package com.matecat.converter.server.resources;
 
-import org.apache.commons.io.IOUtils;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Response;
 import java.io.IOException;
-import java.io.InputStream;
-
+import org.apache.commons.io.IOUtils;
 
 /**
  * Client resource
@@ -26,9 +23,7 @@ public class ClientResource {
             filtersVersion = "[version number not available]";
         }
         try {
-            InputStream inputStream = ClassLoader.getSystemResourceAsStream(CLIENT_HTML_PATH);
-            assert inputStream != null;
-            String html = IOUtils.toString(inputStream, "UTF-8");
+            String html = IOUtils.toString(ClientResource.class.getClassLoader().getResourceAsStream(CLIENT_HTML_PATH), "UTF-8");
             // Handlebar-like variable substitution
             CLIENT_HTML = html.replace("{{filtersVersion}}", filtersVersion);
         } catch (IOException e) {
@@ -39,7 +34,9 @@ public class ClientResource {
     /**
      * Output the client
      *
+     * @param request
      * @return Client
+     * @throws java.io.IOException
      */
     @GET
     public Response client(@Context HttpServletRequest request) throws IOException {

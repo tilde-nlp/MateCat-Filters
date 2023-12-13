@@ -9,6 +9,7 @@ public class ServerException extends IOException {
 
     /**
      * Call the super constructor, passing a message
+     *
      * @param msg Message
      */
     public ServerException(String msg) {

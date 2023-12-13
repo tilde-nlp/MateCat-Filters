@@ -5,6 +5,12 @@ import com.matecat.converter.server.resources.ConvertToXliffResource;
 import com.matecat.converter.server.resources.ExtractOriginalFileResource;
 import com.matecat.converter.server.resources.GenerateDerivedFileResource;
 import com.matecat.converter.server.resources.TestConnectionResource;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.BindException;
+import java.net.InetAddress;
+import java.net.URL;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -14,14 +20,6 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.BindException;
-import java.net.InetAddress;
-import java.net.URL;
-
 
 /**
  * Matecat converter server
@@ -38,15 +36,12 @@ public class MatecatConverterServer {
     private Server server;
     private String localIP, externalIP;
 
-
     /**
      * Constructor which will use the default port
      */
     public MatecatConverterServer() {
         try {
-           int port = Config.serverPort;
-
-            LOGGER.info("read port from config: ", port);
+            int port = Config.SERVER_PORT;
             if (port <= 0) {
                 throw new Exception();
             }
@@ -57,19 +52,18 @@ public class MatecatConverterServer {
         }
     }
 
-
     /**
      * Constructor admitting a configured port
      *
      * @param serverPort Port to use
      */
     public MatecatConverterServer(int serverPort) {
-        if (serverPort < 0)
+        if (serverPort < 0) {
             throw new IllegalArgumentException("There port specified in the configuration is not valid");
+        }
         this.serverPort = serverPort;
         init();
     }
-
 
     /**
      * Stop the server
@@ -82,7 +76,6 @@ public class MatecatConverterServer {
         }
     }
 
-
     /**
      * Check if the server has been started (this is, ready to receive requests)
      *
@@ -91,7 +84,6 @@ public class MatecatConverterServer {
     public boolean isStarted() {
         return server.isStarted();
     }
-
 
     /**
      * Check if the server is stopped
@@ -102,7 +94,6 @@ public class MatecatConverterServer {
         return server.isStopped();
     }
 
-
     /**
      * Get external IP
      *
@@ -112,15 +103,14 @@ public class MatecatConverterServer {
         if (externalIP == null) {
             try {
                 URL whatismyip = new URL("http://checkip.amazonaws.com");
-                BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
-                externalIP = in.readLine();
-                in.close();
+                try ( BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()))) {
+                    externalIP = in.readLine();
+                }
             } catch (IOException ignored) {
             }
         }
         return externalIP;
     }
-
 
     /**
      * Get local IP
@@ -156,7 +146,6 @@ public class MatecatConverterServer {
             throw new RuntimeException("Unknown internal server problem");
         }
     }
-
 
     /**
      * Initialize the resources and other aspects of the server

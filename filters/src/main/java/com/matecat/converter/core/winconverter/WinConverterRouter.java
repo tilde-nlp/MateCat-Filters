@@ -2,6 +2,12 @@ package com.matecat.converter.core.winconverter;
 
 import com.matecat.converter.core.Format;
 import com.matecat.converter.core.util.Config;
+import java.io.File;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.*;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.util.EntityUtils;
@@ -10,38 +16,17 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.*;
-
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-
-
 /**
- * Collects all the WinConverters available and chooses the best one to
- * perform a conversion job.
+ * Collects all the WinConverters available and chooses the best one to perform
+ * a conversion job.
  */
 public class WinConverterRouter {
 
-    /**
-     * A decorator to carry the OCR support information.
-     */
-    private static class OCRDecorator<T> {
-        final T obj;
-        final boolean supportsOcr;
-
-        OCRDecorator(T obj, boolean supportsOcr) {
-            this.obj = obj;
-            this.supportsOcr = supportsOcr;
-        }
-    }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WinConverterRouter.class);
 
     // True if the config has both winConvConsulAddress and winConvConsulService
-    private static final boolean USE_CONSUL = (isNotBlank(Config.winConvConsulAddress) && isNotBlank(Config.winConvConsulService));
+    private static final boolean USE_CONSUL = (isNotBlank(Config.WIN_CONV_CONSUL_ADDRESS) && isNotBlank(Config.WIN_CONV_CONSUL_SERVICE));
     // This prevents sending too much queries to Consul
     private static final int CONSUL_REFRESH_INTERVAL = 1000; // In milliseconds
     private static long lastConsulUpdate = 0;
@@ -62,13 +47,13 @@ public class WinConverterRouter {
 
         } else {
             // If not using Consul use the params in the config file
-            if (isBlank(Config.winConvHost) || Config.winConvPort == null) {
+            if (isBlank(Config.WIN_CONV_HOST) || Config.WIN_CONV_PORT == null) {
                 // No configuration provided for WinConverter
                 converters = Collections.unmodifiableList(new ArrayList<>());
 
             } else {
                 // The converters list will contain the only converter pointed in the configuration
-                InetSocketAddress address = new InetSocketAddress(Config.winConvHost, Config.winConvPort);
+                InetSocketAddress address = new InetSocketAddress(Config.WIN_CONV_HOST, Config.WIN_CONV_PORT);
                 WinConverterClient converter = new WinConverterClient(address);
                 OCRDecorator<WinConverterClient> converterAndOCRSupport = new OCRDecorator<>(converter, true);
                 converters = new ArrayList<>();
@@ -80,7 +65,9 @@ public class WinConverterRouter {
 
     private static void updateConvertersIfNeeded() {
         // If not using Consul or the list was updated recently return
-        if (!USE_CONSUL || lastConsulUpdate + CONSUL_REFRESH_INTERVAL > System.currentTimeMillis()) return;
+        if (!USE_CONSUL || lastConsulUpdate + CONSUL_REFRESH_INTERVAL > System.currentTimeMillis()) {
+            return;
+        }
 
         // The list that will replace the old 'converters' in the class
         List<OCRDecorator<WinConverterClient>> newConvertersList = new ArrayList<>();
@@ -127,11 +114,12 @@ public class WinConverterRouter {
     }
 
     /**
-     * Returns the converters registered in Consul, sorted by health and closeness to the Consul agent (in this order).
+     * Returns the converters registered in Consul, sorted by health and
+     * closeness to the Consul agent (in this order).
      */
     private static List<OCRDecorator<InetSocketAddress>> fetchConsul() throws IOException {
         // With the ending '?near=_agent' the results will be sorted by closeness
-        final String consulQuery = "http://" + Config.winConvConsulAddress +"/v1/health/service/"+ Config.winConvConsulService +"?near=_agent";
+        final String consulQuery = "http://" + Config.WIN_CONV_CONSUL_ADDRESS + "/v1/health/service/" + Config.WIN_CONV_CONSUL_SERVICE + "?near=_agent";
 
         // Query Consul
         HttpResponse response = Request.Get(consulQuery).execute().returnResponse();
@@ -196,7 +184,9 @@ public class WinConverterRouter {
     public static File convert(final File file, Format outputFormat) throws NoRegisteredConvertersException, NoReachableConvertersException, WinConverterClient.WinConverterException {
         updateConvertersIfNeeded();
 
-        if (converters.isEmpty()) throw new NoRegisteredConvertersException();
+        if (converters.isEmpty()) {
+            throw new NoRegisteredConvertersException();
+        }
 
         Format inputFormat = Format.getFormat(file);
         LOGGER.info("Converting file from {} to {}", inputFormat, outputFormat);
@@ -205,7 +195,9 @@ public class WinConverterRouter {
         // try again with the next, and so on.
         for (OCRDecorator<WinConverterClient> decoratedConverter : converters) {
             // If we have to perform an OCR but this converter doesn't support it skip
-            if (Format.isOCRFormat(inputFormat) && !decoratedConverter.supportsOcr) continue;
+            if (Format.isOCRFormat(inputFormat) && !decoratedConverter.supportsOcr) {
+                continue;
+            }
 
             // Try the conversion: if it works return, if not log and continue
             WinConverterClient converter = decoratedConverter.obj;
@@ -226,13 +218,29 @@ public class WinConverterRouter {
         Format outputFormat = FORMATS_MAPPINGS.get(inputFormat);
         return convert(file, outputFormat);
     }
+    /**
+     * A decorator to carry the OCR support information.
+     */
+    private static class OCRDecorator<T> {
+        
+        final T obj;
+        final boolean supportsOcr;
+        
+        OCRDecorator(T obj, boolean supportsOcr) {
+            this.obj = obj;
+            this.supportsOcr = supportsOcr;
+        }
+    }
 
     public static class NoRegisteredConvertersException extends Exception {
+
         public NoRegisteredConvertersException() {
             super("No WinConverters registered");
         }
     }
+
     public static class NoReachableConvertersException extends Exception {
+
         public NoReachableConvertersException() {
             super("Got IOExceptions with all registered WinConverters");
         }

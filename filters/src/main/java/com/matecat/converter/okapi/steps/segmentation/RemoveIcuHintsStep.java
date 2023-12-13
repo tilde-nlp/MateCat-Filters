@@ -1,7 +1,5 @@
 package com.matecat.converter.okapi.steps.segmentation;
 
-import com.ibm.icu.text.BreakIterator;
-import com.ibm.icu.util.ULocale;
 import net.sf.okapi.common.Event;
 import net.sf.okapi.common.LocaleId;
 import net.sf.okapi.common.pipeline.BasePipelineStep;
@@ -13,18 +11,18 @@ import net.sf.okapi.common.resource.TextFragment;
 public class RemoveIcuHintsStep extends BasePipelineStep {
 
     @Override
-    protected Event handleTextUnit (Event event) {
+    protected Event handleTextUnit(Event event) {
         ITextUnit textUnit = event.getTextUnit();
         TextContainer textContainer;
-        if ( textUnit.isTranslatable() ) {
+        if (textUnit.isTranslatable()) {
             textContainer = textUnit.getSource();
-            for ( Segment seg : textContainer.getSegments() ) {
+            for (Segment seg : textContainer.getSegments()) {
                 removeSentenceBoundariesPlaceholders(seg);
             }
 
             for (LocaleId localeId : textUnit.getTargetLocales()) {
                 textContainer = textUnit.getTarget(localeId);
-                for ( Segment seg : textContainer.getSegments() ) {
+                for (Segment seg : textContainer.getSegments()) {
                     removeSentenceBoundariesPlaceholders(seg);
                 }
             }
