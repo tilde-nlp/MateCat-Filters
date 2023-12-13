@@ -59,7 +59,14 @@
             <artifactId>json</artifactId>
             <version>20231013</version>
         </dependency>
-
+        <!-- Update vulnerable dependency for net.sf.okapi.filters:okapi-filter-yaml:jar:1.45.0-->
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>2.2</version>
+            <scope>runtime</scope>
+        </dependency>
+        
         <!-- SERVER -->
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
